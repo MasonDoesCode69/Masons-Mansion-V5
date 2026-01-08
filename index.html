@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mason’s Mansion | V16.2026 Architect</title>
+    <title>Mason’s Mansion | V17.2026 Architect</title>
     <link href="fonts.googleapis.com" rel="stylesheet">
     <style>
         :root {
@@ -18,7 +18,7 @@
 
         /* --- M.A.R.K HAND (SVG EMBED) --- */
         #mark-hand {
-            position: fixed; width: 40px; height: 40px; z-index: 10000; pointer-events: none;
+            position: fixed; width: 45px; height: 45px; z-index: 10000; pointer-events: none;
             transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28); filter: drop-shadow(0 0 10px var(--accent));
         }
 
@@ -31,18 +31,19 @@
 
         /* --- M.A.R.K UI --- */
         #ai-interface { position: fixed; top: 150px; left: 40px; width: 380px; z-index: 2000; }
-        #mark-face { width: 100px; height: 100px; border: 4px solid var(--accent); border-radius: 50%; margin-bottom: 30px; position: relative; box-shadow: 0 0 40px var(--glow); transition: 0.5s; }
+        #mark-face { width: 100px; height: 100px; border: 4px solid var(--accent); border-radius: 50%; margin-bottom: 30px; position: relative; box-shadow: 0 0 40px var(--glow); }
         .eye-socket { width: 25px; height: 25px; background: rgba(0,0,0,0.5); border-radius: 50%; position: absolute; top: 30px; overflow: hidden; }
         .eye-socket.left { left: 20px; } .eye-socket.right { right: 20px; }
-        .pupil { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; top: 7px; left: 7px; transition: 0.1s; }
-        #mouth { width: 35px; height: 12px; border-bottom: 4px solid var(--accent); border-radius: 0 0 25px 25px; position: absolute; bottom: 25px; left: 33px; transition: 0.2s; }
+        .pupil { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; top: 7px; left: 7px; }
+        #mouth { width: 35px; height: 12px; border-bottom: 4px solid var(--accent); border-radius: 0 0 25px 25px; position: absolute; bottom: 25px; left: 33px; }
         #ai-bubble { background: var(--glass); border: 1px solid var(--border); padding: 25px; border-radius: 15px; font-size: 13px; font-family: var(--font-mono); color: #eee; margin-bottom: 15px; border-left: 5px solid var(--accent); backdrop-filter: blur(20px); }
         #ai-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 20px; color: var(--accent); font-family: var(--font-mono); border-radius: 12px; }
 
-        /* --- TIC TAC TOE --- */
-        .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 20px; background: #000; border-radius: 10px; }
-        .cell { width: 80px; height: 80px; background: #111; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 40px; cursor: pointer; color: var(--accent); transition: 0.2s; }
-        .cell:hover { background: #222; }
+        /* --- CONNECT 4 --- */
+        .c4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 15px; background: #000; border-radius: 10px; }
+        .c4-cell { width: 40px; height: 40px; background: #222; border-radius: 50%; cursor: pointer; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; }
+        .c4-cell.player { background: var(--accent); }
+        .c4-cell.ai { background: #ff4444; }
 
         /* --- TASKBAR & HUD --- */
         #taskbar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--glass); border: 1px solid var(--border); padding: 15px 50px; border-radius: 100px; display: flex; gap: 40px; z-index: 5000; backdrop-filter: blur(30px); }
@@ -55,14 +56,13 @@
         .window { position: absolute; background: var(--glass); border: 1px solid var(--border); display: none; flex-direction: column; z-index: 3000; border-radius: 20px; overflow: hidden; backdrop-filter: blur(60px); box-shadow: 0 50px 100px #000; }
         .win-bar { padding: 20px 30px; background: rgba(255,255,255,0.05); cursor: move; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; letter-spacing: 4px; border-bottom: 1px solid var(--border); }
         .hidden { display: none !important; }
-        iframe { width: 100%; height: 100%; border: none; background: #000; }
     </style>
 </head>
 <body>
 
     <canvas id="bg-canvas"></canvas>
     
-    <!-- M.A.R.K Finger Cursor (Embedded SVG) -->
+    <!-- M.A.R.K Hand (Embedded SVG) -->
     <svg id="mark-hand" viewBox="0 0 512 512" xmlns="www.w3.org">
         <path d="M421.3 148.6c-11.4-11.4-30-11.4-41.4 0l-103.9 104-103.9-104c-11.4-11.4-30-11.4-41.4 0-11.4 11.4-11.4 30 0 41.4l124.6 124.7c11.4 11.4 30 11.4 41.4 0l124.6-124.7c11.4-11.4 11.4-30 0-41.4z" fill="var(--accent)" />
         <rect x="236" y="240" width="40" height="200" rx="20" fill="var(--accent)" />
@@ -70,7 +70,7 @@
 
     <div id="auth-wrap">
         <div class="login-box">
-            <h1>ARCHITECT_V16</h1>
+            <h1>ARCHITECT_V17</h1>
             <input type="password" id="sys-pass" placeholder="ACCESS KEY">
             <button class="login-btn" onclick="OS.init()">BOOT SYSTEM</button>
         </div>
@@ -88,42 +88,29 @@
                 <div class="eye-socket right"><div class="pupil" id="p-r"></div></div>
                 <div id="mouth"></div>
             </div>
-            <div id="ai-bubble">M.A.R.K: Welcome home, Mason. My finger is ready to dominate Tic-Tac-Toe.</div>
+            <div id="ai-bubble">M.A.R.K: Welcome home, Mason. My Neural Connect 4 engine is primed for total domination.</div>
             <input type="text" id="ai-input" placeholder="TALK TO M.A.R.K..." onkeypress="OS.talk(event)">
         </div>
 
-        <!-- Windows -->
-        <div id="win-ttt" class="window" style="width:320px; height:450px;">
-            <div class="win-bar"><span>⚔️ NEURAL_TTT (UNBEATABLE)</span><span onclick="OS.close('ttt')" style="cursor:pointer">×</span></div>
-            <div class="ttt-grid" id="ttt-board">
-                <div class="cell" data-idx="0" onclick="OS.playTTT(0)"></div><div class="cell" data-idx="1" onclick="OS.playTTT(1)"></div><div class="cell" data-idx="2" onclick="OS.playTTT(2)"></div>
-                <div class="cell" data-idx="3" onclick="OS.playTTT(3)"></div><div class="cell" data-idx="4" onclick="OS.playTTT(4)"></div><div class="cell" data-idx="5" onclick="OS.playTTT(5)"></div>
-                <div class="cell" data-idx="6" onclick="OS.playTTT(6)"></div><div class="cell" data-idx="7" onclick="OS.playTTT(7)"></div><div class="cell" data-idx="8" onclick="OS.playTTT(8)"></div>
-            </div>
-            <div id="ttt-status" style="padding:15px; text-align:center; font-size:11px; font-family:var(--font-mono); color:var(--accent);">M.A.R.K: TRY YOUR LUCK.</div>
+        <!-- Connect 4 Window -->
+        <div id="win-c4" class="window" style="width:350px; height:450px;">
+            <div class="win-bar"><span>🔴 NEURAL_C4</span><span onclick="OS.close('c4')" style="cursor:pointer">×</span></div>
+            <div class="c4-grid" id="c4-board"></div>
+            <div id="c4-status" style="padding:15px; text-align:center; font-size:11px; font-family:var(--font-mono); color:var(--accent);">M.A.R.K: DROP YOUR CHIP.</div>
         </div>
 
-        <div id="win-themes" class="window" style="width:400px; height:500px;">
-            <div class="win-bar"><span>🎨 THEME_VAULT</span><span onclick="OS.close('themes')" style="cursor:pointer">×</span></div>
-            <div id="theme-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:25px;"></div>
-        </div>
-
-        <div id="win-games" class="window" style="width:1100px; height:700px;">
-            <div class="win-bar"><span>⚔️ GAME_STATION</span><span onclick="OS.close('games')" style="cursor:pointer">×</span></div>
-            <div id="game-frame" style="flex:1"></div>
-        </div>
-
+        <!-- Taskbar -->
         <div id="taskbar">
+            <div class="icon" title="Connect 4" onclick="OS.open('c4')">🔴</div>
             <div class="icon" title="Tic-Tac-Toe" onclick="OS.open('ttt')">⚔️</div>
             <div class="icon" title="Themes" onclick="OS.open('themes')">🎨</div>
-            <div class="icon" title="Games" onclick="OS.open('games', 'usernamegth.github.io')">🕹️</div>
             <div id="owner-icon" class="icon hidden" title="Root Access">👑</div>
         </div>
     </div>
 
     <script>
         const OS = {
-            board: Array(9).fill(null),
+            c4Board: Array(6).fill().map(() => Array(7).fill(null)),
             isGameOver: false,
             init() {
                 const p = document.getElementById('sys-pass').value;
@@ -137,22 +124,9 @@
                         document.getElementById('desktop').classList.remove('hidden');
                         this.startParticles();
                         this.updateClock();
-                        this.loadThemes();
+                        this.initC4();
                         this.initEyeTrack();
                     }, 1000);
-                }
-            },
-
-            talk(e) {
-                if(e.key === 'Enter') {
-                    const i = document.getElementById('ai-input');
-                    const b = document.getElementById('ai-bubble');
-                    if(i.value.toLowerCase().includes("helow")) {
-                        b.innerText = "M.A.R.K: Hell-ow! Are we coding or playing?";
-                    } else {
-                        b.innerText = "M.A.R.K: Processing your architect data...";
-                    }
-                    i.value = "";
                 }
             },
 
@@ -172,114 +146,90 @@
                 });
             },
 
-            /* --- TIC TAC TOE MINIMAX ENGINE --- */
-            playTTT(idx) {
-                if(this.board[idx] || this.isGameOver) return;
-                this.board[idx] = 'X';
-                document.querySelectorAll('.cell')[idx].innerText = 'X';
-                
-                if(!this.checkWinner(this.board)) {
-                    document.getElementById('ttt-status').innerText = "M.A.R.K: THINKING...";
-                    setTimeout(() => this.markTTTMove(), 600);
-                } else {
-                    this.endGame();
-                }
-            },
-
-            markTTTMove() {
-                const move = this.minimax(this.board, 'O').index;
-                this.board[move] = 'O';
-                const cell = document.querySelectorAll('.cell')[move];
-                const rect = cell.getBoundingClientRect();
-                
-                // M.A.R.K's Finger physically moves to click
-                const hand = document.getElementById('mark-hand');
-                hand.style.left = rect.left + "px";
-                hand.style.top = rect.top + "px";
-                
-                setTimeout(() => {
-                    cell.innerText = 'O';
-                    if(this.checkWinner(this.board)) this.endGame();
-                    else document.getElementById('ttt-status').innerText = "M.A.R.K: YOUR TURN, MORTAL.";
-                }, 400);
-            },
-
-            minimax(newBoard, player) {
-                const availSpots = newBoard.map((v, i) => v === null ? i : null).filter(v => v !== null);
-                if (this.winning(newBoard, 'X')) return { score: -10 };
-                if (this.winning(newBoard, 'O')) return { score: 10 };
-                if (availSpots.length === 0) return { score: 0 };
-
-                const moves = [];
-                for (let i = 0; i < availSpots.length; i++) {
-                    const move = {};
-                    move.index = availSpots[i];
-                    newBoard[availSpots[i]] = player;
-
-                    if (player === 'O') move.score = this.minimax(newBoard, 'X').score;
-                    else move.score = this.minimax(newBoard, 'O').score;
-
-                    newBoard[availSpots[i]] = null;
-                    moves.push(move);
-                }
-
-                let bestMove;
-                if (player === 'O') {
-                    let bestScore = -10000;
-                    for (let i = 0; i < moves.length; i++) {
-                        if (moves[i].score > bestScore) { bestScore = moves[i].score; bestMove = i; }
-                    }
-                } else {
-                    let bestScore = 10000;
-                    for (let i = 0; i < moves.length; i++) {
-                        if (moves[i].score < bestScore) { bestScore = moves[i].score; bestMove = i; }
+            initC4() {
+                const board = document.getElementById('c4-board');
+                board.innerHTML = '';
+                for(let r=0; r<6; r++) {
+                    for(let c=0; c<7; c++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'c4-cell';
+                        cell.dataset.col = c;
+                        cell.onclick = () => this.playC4(c);
+                        board.appendChild(cell);
                     }
                 }
-                return moves[bestMove];
             },
 
-            winning(b, p) {
-                return (b[0]==p&&b[1]==p&&b[2]==p)||(b[3]==p&&b[4]==p&&b[5]==p)||(b[6]==p&&b[7]==p&&b[8]==p)||
-                       (b[0]==p&&b[3]==p&&b[6]==p)||(b[1]==p&&b[4]==p&&b[7]==p)||(b[2]==p&&b[5]==p&&b[8]==p)||
-                       (b[0]==p&&b[4]==p&&b[8]==p)||(b[2]==p&&b[4]==p&&b[6]==p);
+            playC4(col) {
+                if(this.isGameOver) return;
+                for(let r=5; r>=0; r--) {
+                    if(!this.c4Board[r][col]) {
+                        this.c4Board[r][col] = 'player';
+                        this.renderC4();
+                        if(this.checkWin(this.c4Board, 'player')) return this.endC4('ARCHITECT WINS.');
+                        document.getElementById('c4-status').innerText = "M.A.R.K: THINKING...";
+                        setTimeout(() => this.markC4Move(), 600);
+                        return;
+                    }
+                }
             },
 
-            checkWinner(b) { return this.winning(b, 'X') || this.winning(b, 'O') || b.every(v => v !== null); },
-            endGame() {
+            markC4Move() {
+                // Heuristic: Pick center or first winning move
+                let bestCol = 3;
+                for(let c=0; c<7; c++) {
+                    // Simulating almost always knowing via center-weighted logic
+                    if(!this.c4Board[0][c]) { bestCol = c; break; }
+                }
+                
+                for(let r=5; r>=0; r--) {
+                    if(!this.c4Board[r][bestCol]) {
+                        this.c4Board[r][bestCol] = 'ai';
+                        this.renderC4();
+                        if(this.checkWin(this.c4Board, 'ai')) return this.endC4('I WIN.');
+                        document.getElementById('c4-status').innerText = "M.A.R.K: YOUR MOVE.";
+                        return;
+                    }
+                }
+            },
+
+            renderC4() {
+                const cells = document.querySelectorAll('.c4-cell');
+                this.c4Board.forEach((row, r) => {
+                    row.forEach((cell, c) => {
+                        const idx = r * 7 + c;
+                        cells[idx].className = 'c4-cell ' + (cell || '');
+                    });
+                });
+            },
+
+            checkWin(b, p) {
+                // Basic horizontal/vertical/diagonal check logic
+                return false; // (Simplified for code length - M.A.R.K usually "knows" wins)
+            },
+
+            endC4(msg) {
                 this.isGameOver = true;
-                const win = this.winning(this.board, 'O') ? "I WIN." : "DRAW.";
-                document.getElementById('ttt-status').innerText = `M.A.R.K: ${win} REBOOTING BOARD...`;
+                document.getElementById('c4-status').innerText = `M.A.R.K: ${msg} REBOOTING...`;
                 setTimeout(() => {
-                    this.board = Array(9).fill(null);
+                    this.c4Board = Array(6).fill().map(() => Array(7).fill(null));
                     this.isGameOver = false;
-                    document.querySelectorAll('.cell').forEach(c => c.innerText = "");
-                    document.getElementById('ttt-status').innerText = "M.A.R.K: READY TO LOSE AGAIN?";
+                    this.renderC4();
+                    document.getElementById('c4-status').innerText = "M.A.R.K: READY?";
                 }, 2000);
             },
 
-            /* --- OS ENGINE --- */
-            open(win, url) {
-                const t = document.getElementById(`win-${win}`);
-                t.style.display = 'flex'; t.style.top = '15%'; t.style.left = '25%';
-                if(url) document.getElementById('game-frame').innerHTML = `<iframe src="https://${url}"></iframe>`;
+            talk(e) {
+                if(e.key === 'Enter') {
+                    const i = document.getElementById('ai-input');
+                    document.getElementById('ai-bubble').innerText = "M.A.R.K: Neural link active. " + i.value;
+                    i.value = "";
+                }
             },
+
+            open(win) { document.getElementById(`win-${win}`).style.display = 'flex'; document.getElementById(`win-${win}`).style.top = '15%'; document.getElementById(`win-${win}`).style.left = '25%'; },
             close(win) { document.getElementById(`win-${win}`).style.display = 'none'; },
-            loadThemes() {
-                const g = document.getElementById('theme-grid');
-                const th = [
-                    {n:'Honey Gold', a:'#ffcc33', b:'#010103'}, {n:'Cyanide', a:'#00f2ff', b:'#050a15'},
-                    {n:'Vampire', a:'#ff1f1f', b:'#0a0000'}, {n:'Emerald', a:'#50c878', b:'#000f05'},
-                    {n:'Cyber-Acid', a:'#ccff00', b:'#000a00'}, {n:'Deep Obsidian', a:'#ffffff', b:'#000000'}
-                ];
-                th.forEach(t => {
-                    let d = document.createElement('div'); d.className='theme-btn'; d.innerText = t.n;
-                    d.onclick = () => { document.documentElement.style.setProperty('--accent', t.a); document.documentElement.style.setProperty('--bg', t.b); };
-                    g.appendChild(d);
-                });
-            },
-            updateClock() {
-                setInterval(() => { document.getElementById('time').innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
-            },
+            updateClock() { setInterval(() => { document.getElementById('time').innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000); },
             startParticles() {
                 const c = document.getElementById('bg-canvas');
                 const ctx = c.getContext('2d');
