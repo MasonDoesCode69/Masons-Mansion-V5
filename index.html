@@ -100,6 +100,8 @@
         <div id="sidebar">
             <div id="sidebar-tab" onclick="document.getElementById('sidebar').classList.toggle('open')">MADNESS LIST</div>
             <div id="command-list">
+                <h4 style="font-size: 9px; color: var(--accent); margin-bottom: 10px; letter-spacing: 2px;">WORLD MODES</h4>
+                <button class="option-btn" id="m-liquidgame" onclick="Mansion.toggle('liquidgame')">0. Liquid Game Mode</button>
                 <h4 style="font-size: 9px; color: var(--accent); margin-bottom: 10px; letter-spacing: 2px;">30 PHYSICS CMDS</h4>
                 <button class="option-btn" id="m-bounce" onclick="Mansion.toggle('bounce')">1. Cursor Bounce</button>
                 <button class="option-btn" id="m-cloak" onclick="Mansion.toggle('cloak')">2. Phantom Cloak</button>
@@ -139,7 +141,7 @@
         <div id="taskbar">
             <div class="t-icon" onclick="Mansion.spawn('games')">🎮</div>
             <div class="t-icon" onclick="Mansion.spawn('themes')">🎨</div>
-            <div class="t-icon" onclick="Mansion.spawn('settings')">⚙️</div>
+            <div class="t-icon" onclick="Mansion.spawn('glade')">✨</div>
             <div id="owner-icon" class="t-icon hidden" onclick="Mansion.spawnOwnerPanel()">👑</div>
         </div>
     </div>
@@ -147,14 +149,14 @@
     <script>
         const Mansion = {
             rank: 'guest', orbs: [], mouse: { x: -1000, y: -1000 },
-            config: { count: 80, speed: 2, size: 4, glow: 15, color: '#ffcc33' },
-            mods: { float: true, bounce: false, cloak: false, glade: false, rgb: false, pulse: false, magnet: false, trails: false, jitter: false, speed: false, orbit: false },
+            config: { count: 80, speed: 2, size: 4, glow: 15, color: '#ffcc33', shape: 'circle' },
+            mods: { float: true, bounce: false, cloak: false, glade: false, rgb: false, pulse: false, magnet: false, trails: false, jitter: false, speed: false, orbit: false, liquidgame: false },
 
             init() {
                 const p = document.getElementById('sys-pass').value;
                 if(p === "masononly69") { this.rank = "OWNER"; document.getElementById('owner-icon').classList.remove('hidden'); this.boot(); }
                 else if(p === "honey") { this.rank = "MEMBER"; this.boot(); }
-                else { alert("ACCESS DENIED"); }
+                else { alert("INVALID KEY"); }
             },
 
             boot() {
@@ -201,37 +203,43 @@
 
             setTheme(t) {
                 document.body.className = t === 'honey' ? '' : 'theme-' + t;
-                setTimeout(() => {
-                    this.config.color = getComputedStyle(document.body).getPropertyValue('--accent').trim();
-                }, 50);
+                setTimeout(() => { this.config.color = getComputedStyle(document.body).getPropertyValue('--accent').trim(); }, 50);
             },
+
+            setShape(s) { this.config.shape = s; },
 
             chaosBurst() { for(let i=0; i<30; i++) this.orbs.push(this.createOrb()); },
 
             spawn(type) {
+                const id = 'win-' + type;
+                if(document.getElementById(id)) return;
+                const win = document.createElement('div');
+                win.className = 'window'; win.id = id;
+                win.style.cssText = "width:300px; left:50px; top:50px;";
+                
+                let content = '';
                 if(type === 'themes') {
-                    const id = 'win-themes';
-                    if(document.getElementById(id)) return;
-                    const win = document.createElement('div');
-                    win.className = 'window'; win.id = id;
-                    win.style.cssText = "width:280px; left:50%; top:50%; transform:translate(-50%,-50%);";
-                    win.innerHTML = `
-                        <div class="win-header" onmousedown="Mansion.dragStart(event, '${id}')">
-                            <span class="win-title">THEME ENGINE</span>
-                            <span class="win-close" onclick="this.parentElement.parentElement.remove()">×</span>
-                        </div>
-                        <div class="win-content theme-grid">
-                            <button class="theme-btn" onclick="Mansion.setTheme('honey')">Honey Gold</button>
-                            <button class="theme-btn" onclick="Mansion.setTheme('blue')">Blue Nova</button>
-                            <button class="theme-btn" onclick="Mansion.setTheme('red')">Red Fury</button>
-                            <button class="theme-btn" onclick="Mansion.setTheme('glitch')">Glitch Core</button>
-                            <button class="theme-btn" onclick="Mansion.setTheme('cyber')">Cyber Wave</button>
-                            <button class="theme-btn" onclick="Mansion.setTheme('volcano')">Volcano</button>
-                            <button class="theme-btn" onclick="Mansion.setTheme('ash')">Ash Decay</button>
-                        </div>
-                    `;
-                    document.getElementById('win-layer').appendChild(win);
+                    content = `<div class="theme-grid">
+                        <button class="theme-btn" onclick="Mansion.setTheme('honey')">Honey</button>
+                        <button class="theme-btn" onclick="Mansion.setTheme('blue')">Blue</button>
+                        <button class="theme-btn" onclick="Mansion.setTheme('red')">Red</button>
+                        <button class="theme-btn" onclick="Mansion.setTheme('glitch')">Glitch</button>
+                        <button class="theme-btn" onclick="Mansion.setTheme('cyber')">Cyber</button>
+                        <button class="theme-btn" onclick="Mansion.setTheme('volcano')">Volcano</button>
+                        <button class="theme-btn" onclick="Mansion.setTheme('ash')">Ash</button>
+                    </div>`;
+                } else if(type === 'glade') {
+                    content = `<p style="font-size:11px; margin-bottom:10px;">Activate Glade Mode?</p>
+                               <button class="option-btn active" onclick="Mansion.toggle('glade')">TOGGLE GLADE</button>`;
+                } else {
+                    content = `<p>System directory: /root/mason/v16/${type}</p>`;
                 }
+
+                win.innerHTML = `<div class="win-header" onmousedown="Mansion.dragStart(event, '${id}')">
+                    <span class="win-title">${type.toUpperCase()}</span>
+                    <span class="win-close" onclick="this.parentElement.parentElement.remove()">×</span>
+                </div><div class="win-content">${content}</div>`;
+                document.getElementById('win-layer').appendChild(win);
             },
 
             spawnOwnerPanel() {
@@ -246,11 +254,18 @@
                         <span class="win-close" onclick="this.parentElement.parentElement.remove()">×</span>
                     </div>
                     <div class="win-content">
+                        <label style="font-size:9px; color:var(--accent)">SHAPE SELECTOR</label>
+                        <div class="theme-grid" style="margin-bottom:15px;">
+                            <button class="theme-btn" onclick="Mansion.setShape('circle')">Bubbles</button>
+                            <button class="theme-btn" onclick="Mansion.setShape('rect')">Cubes</button>
+                            <button class="theme-btn" onclick="Mansion.setShape('poly')">Hexagon</button>
+                            <button class="theme-btn" onclick="Mansion.setShape('liquid')">Liquid</button>
+                        </div>
                         <label style="font-size:9px; color:var(--accent)">POPULATION</label>
                         <input type="range" min="10" max="500" value="${this.config.count}" oninput="Mansion.updateConfig('count', this.value)">
-                        <label style="font-size:9px; color:var(--accent)">GLOW POWER</label>
+                        <label style="font-size:9px; color:var(--accent)">GLOW</label>
                         <input type="range" min="0" max="100" value="${this.config.glow}" oninput="Mansion.updateConfig('glow', this.value)">
-                        <button class="option-btn active" style="margin-top:15px; text-align:center;" onclick="Mansion.refreshOrbs()">REGENERATE WORLD</button>
+                        <button class="option-btn active" style="margin-top:10px; text-align:center;" onclick="Mansion.refreshOrbs()">REGENERATE WORLD</button>
                     </div>
                 `;
                 document.getElementById('win-layer').appendChild(win);
@@ -265,6 +280,27 @@
                 window.onmouseup = () => window.onmousemove = null;
             },
 
+            drawShape(o, radius) {
+                this.ctx.beginPath();
+                if(this.config.shape === 'rect') {
+                    this.ctx.rect(o.x-radius, o.y-radius, radius*2, radius*2);
+                } else if(this.config.shape === 'poly') {
+                    for(let i=0; i<6; i++) {
+                        let a = i * Math.PI / 3;
+                        let px = o.x + radius * Math.cos(a);
+                        let py = o.y + radius * Math.sin(a);
+                        if(i===0) this.ctx.moveTo(px,py); else this.ctx.lineTo(px,py);
+                    }
+                    this.ctx.closePath();
+                } else if(this.config.shape === 'liquid') {
+                    let s = 1 + Math.sqrt(o.vx*o.vx + o.vy*o.vy) * 0.3;
+                    this.ctx.ellipse(o.x, o.y, radius*s, radius/s, Math.atan2(o.vy, o.vx), 0, Math.PI*2);
+                } else {
+                    this.ctx.arc(o.x, o.y, radius, 0, Math.PI*2);
+                }
+                this.ctx.fill();
+            },
+
             loop() {
                 this.ctx.fillStyle = this.mods.trails ? 'rgba(5, 4, 0, 0.15)' : '#050400';
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -273,32 +309,34 @@
                     let dx = this.mouse.x - o.x, dy = this.mouse.y - o.y;
                     let dist = Math.sqrt(dx*dx + dy*dy);
 
-                    if(this.mods.bounce && dist < 120) {
-                        let angle = Math.atan2(dy, dx);
-                        o.vx -= Math.cos(angle) * 0.8; o.vy -= Math.sin(angle) * 0.8;
+                    if(this.mods.liquidgame) {
+                        o.vy += 0.15; // Gravity
+                        if(o.y > innerHeight - 60) o.vy -= 0.4; // Buoyancy floor
                     }
 
-                    if(this.mods.glade && Math.random() > 0.997) {
-                        o.x = Math.random() * innerWidth; o.y = Math.random() * innerHeight;
+                    if(this.mods.bounce && dist < 120) {
+                        let a = Math.atan2(dy, dx);
+                        o.vx -= Math.cos(a) * 1.5; o.vy -= Math.sin(a) * 1.5;
+                    }
+
+                    if(this.mods.glade && Math.random() > 0.995) {
+                        o.x = (o.x + innerWidth/2) % innerWidth;
+                        o.y = (o.y + innerHeight/2) % innerHeight;
                     }
 
                     if(this.mods.magnet && dist < 400) { o.vx += dx * 0.001; o.vy += dy * 0.001; }
                     if(this.mods.float) { o.x += o.vx; o.y += o.vy; }
-                    if(this.mods.orbit) { o.a += 0.02; o.x += Math.cos(o.a) * 2; o.y += Math.sin(o.a) * 2; }
-                    if(this.mods.jitter) { o.x += (Math.random()-0.5)*10; o.y += (Math.random()-0.5)*10; }
-
+                    
                     if(o.x < 0) o.x = innerWidth; if(o.x > innerWidth) o.x = 0;
                     if(o.y < 0) o.y = innerHeight; if(o.y > innerHeight) o.y = 0;
 
-                    let opac = this.mods.cloak ? Math.min(dist / 400, 1) : 1;
-                    this.ctx.globalAlpha = opac;
+                    this.ctx.globalAlpha = this.mods.cloak ? Math.min(dist/400, 1) : 1;
                     this.ctx.shadowBlur = this.config.glow;
                     this.ctx.shadowColor = this.mods.rgb ? `hsl(${Date.now()/10 % 360}, 100%, 50%)` : this.config.color;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(o.x, o.y, o.r * (this.mods.pulse ? Math.sin(Date.now()/200)*2+2 : 1), 0, Math.PI*2);
                     this.ctx.fillStyle = this.mods.rgb ? `hsl(${Date.now()/10 % 360}, 80%, 60%)` : this.config.color;
-                    this.ctx.fill();
+                    
+                    let r = o.r * (this.mods.pulse ? Math.sin(Date.now()/200)*2+2 : 1);
+                    this.drawShape(o, r);
                 });
                 this.ctx.globalAlpha = 1;
                 requestAnimationFrame(() => this.loop());
