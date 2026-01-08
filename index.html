@@ -1,468 +1,1463 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- 
-    MASON'S MANSION | V22 ARCHITECT ELITE
-    [INFRASTRUCTURE: 600+ LINES OF CODE]
-    COMPONENTS: 
-    1. MARK Physics Companion (Follower)
-    2. PolyTrack Mini (Retro Racing Engine)
-    3. Neon Atelier (Advanced Canvas)
-    4. Matrix Neural Core (Theme Engine)
-    5. Void Physics Sandbox
--->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mason’s Mansion | V22 Elite</title>
-    <style>
-        :root {
-            --gold: #ffcc33;
-            --dark: #050505;
-            --glass: rgba(15, 12, 5, 0.97);
-            --glow: rgba(255, 204, 51, 0.5);
-            --neon: #00f3ff;
-            --blood: #ff3333;
-            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <title>Bob’s Adventure – Companion Game</title>
+  <style>
+    /* ============= GLOBAL STYLES ============= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
 
-        /* --- GLOBAL RESET & SCROLL --- */
-        * { box-sizing: border-box; cursor: none !important; margin: 0; padding: 0; user-select: none; }
-        body { 
-            background: var(--dark); color: #fff; font-family: var(--font); 
-            overflow: hidden; height: 100vh;
-            background-image: radial-gradient(circle at center, #111 0%, #000 100%);
-        }
+    body {
+      background: radial-gradient(circle at top, #111827, #020617);
+      color: #e5e7eb;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        /* --- BACKGROUND FX --- */
-        #master-canvas { position: fixed; inset: 0; z-index: 0; opacity: 0.6; pointer-events: none; }
+    #game-wrapper {
+      display: flex;
+      flex-direction: row;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0,0,0,0.7);
+      border: 2px solid #1f2937;
+    }
 
-        /* --- MARK: THE FLOATING AI --- */
-        #mark-logic-unit {
-            position: fixed; z-index: 100000; pointer-events: none;
-            display: flex; flex-direction: column; align-items: center;
-            will-change: transform; transition: opacity 0.5s;
-        }
-        #mark-orb {
-            width: 50px; height: 50px; background: var(--gold);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 28px; color: #000; font-weight: 900;
-            box-shadow: 0 0 40px var(--glow), inset 0 0 15px rgba(0,0,0,0.4);
-        }
-        #mark-speech {
-            background: var(--glass); padding: 15px 25px; border-radius: 25px;
-            border: 2px solid var(--gold); font-size: 13px; margin-bottom: 12px;
-            opacity: 0; transform: translateY(15px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-width: 300px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.9);
-            color: #fff; font-weight: 600;
-        }
-        #mark-speech.active { opacity: 1; transform: translateY(0); }
+    /* ============= LEFT PANEL: GAME ============= */
+    #game-container {
+      position: relative;
+      width: 720px;
+      height: 480px;
+      background: #030712;
+      border-right: 2px solid #111827;
+      overflow: hidden;
+    }
 
-        /* --- AUTHENTICATION SHIELD --- */
-        #security-gate {
-            position: fixed; inset: 0; z-index: 10000;
-            background: #000; display: flex; align-items: center; justify-content: center;
-        }
-        .gate-card {
-            background: var(--glass); padding: 70px; border-radius: 60px;
-            border: 2px solid var(--gold); text-align: center; width: 500px;
-            box-shadow: 0 0 150px #000, 0 0 50px var(--glow);
-            animation: pulseGate 4s infinite alternate;
-        }
-        @keyframes pulseGate { from { border-color: var(--gold); } to { border-color: #fff; } }
-        .gate-card h1 { letter-spacing: 18px; color: var(--gold); margin-bottom: 15px; font-size: 45px; text-shadow: 0 0 25px var(--glow); }
-        .gate-card input {
-            display: block; width: 100%; padding: 22px; margin: 35px 0;
-            background: rgba(0,0,0,0.9); border: 1px solid var(--gold); color: #fff;
-            text-align: center; border-radius: 20px; font-size: 20px; transition: 0.3s;
-        }
-        .gate-card button {
-            width: 100%; padding: 22px; background: var(--gold);
-            border: none; font-weight: 900; border-radius: 20px;
-            text-transform: uppercase; letter-spacing: 6px; transition: 0.3s;
-        }
-        .gate-card button:hover { background: #fff; transform: translateY(-5px); }
+    canvas {
+      background: radial-gradient(circle at center, #0f172a, #020617);
+      image-rendering: pixelated;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
 
-        /* --- THE HALLWAY NAVIGATION --- */
-        #hallway {
-            position: relative; width: 100vw; height: 100vh;
-            perspective: 2000px; display: none; z-index: 1;
-        }
-        .portal-grid {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex; gap: 50px;
-        }
-        .portal {
-            width: 250px; height: 400px; background: var(--glass);
-            border: 2px solid var(--gold); border-radius: 25px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: 0.7s cubic-bezier(0.19, 1, 0.22, 1);
-            position: relative; overflow: hidden; backdrop-filter: blur(15px);
-        }
-        .portal:hover {
-            transform: scale(1.15) translateZ(100px);
-            box-shadow: 0 0 80px var(--glow);
-            border-color: #fff;
-        }
-        .portal-icon { font-size: 70px; margin-bottom: 25px; filter: drop-shadow(0 0 15px var(--glow)); }
-        .portal-name { font-size: 14px; letter-spacing: 8px; color: var(--gold); font-weight: 900; }
+    #hud {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #e5e7eb;
+      text-shadow: 0 0 4px #000;
+    }
 
-        /* --- UNIVERSAL ROOM SYSTEM --- */
-        .room {
-            position: fixed; inset: 0; z-index: 5000;
-            background: var(--dark); display: none;
-            flex-direction: column; animation: roomIn 0.9s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-        @keyframes roomIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .hud-box {
+      background: rgba(15,23,42,0.8);
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+    }
 
-        .navbar {
-            padding: 30px 60px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.08); z-index: 100;
-        }
-        .nav-exit { background: var(--gold); color: #000; padding: 14px 40px; border-radius: 50px; font-weight: 900; font-size: 13px; letter-spacing: 3px; }
+    #hud-title {
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      color: #38bdf8;
+    }
 
-        /* --- GAMING TERMINAL (POLYTRACK LITE) --- */
-        #game-room { background: #000; }
-        #game-canvas { display: block; margin: auto; background: #080808; border: 4px solid var(--gold); border-radius: 20px; }
+    #hud-keys {
+      font-size: 12px;
+      opacity: 0.8;
+    }
 
-        /* --- NEON ATELIER --- */
-        #atelier-canvas { background: #050505; flex: 1; }
+    /* ============= DIALOGUE WINDOW ============= */
+    #dialogue-container {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 10px;
+      pointer-events: none;
+    }
 
-        /* --- SETTINGS / VITALS --- */
-        .settings-content { padding: 80px; max-width: 1000px; margin: 0 auto; overflow-y: auto; flex: 1; }
-        .setting-row { margin-bottom: 40px; padding: 30px; background: rgba(255,255,255,0.02); border-radius: 20px; border-left: 5px solid var(--gold); }
-        input[type="range"] { width: 100%; height: 10px; accent-color: var(--gold); }
+    #dialogue-box {
+      background: rgba(15,23,42,0.96);
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+      box-shadow: 0 0 12px rgba(0,0,0,0.8);
+      padding: 10px 12px;
+      min-height: 120px;
+      display: none;
+      pointer-events: auto;
+    }
 
-    </style>
+    #dialogue-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    #portrait {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #38bdf8;
+      background: radial-gradient(circle at 30% 20%, #f97316, #b91c1c);
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    #speaker-name {
+      font-weight: bold;
+      color: #38bdf8;
+      font-size: 14px;
+    }
+
+    #dialogue-text {
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    #dialogue-choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .choice-btn {
+      background: #0f766e;
+      border: 1px solid #064e3b;
+      color: #e5e7eb;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.05s;
+    }
+
+    .choice-btn:hover {
+      background: #0d9488;
+      transform: translateY(-1px);
+    }
+
+    #dialogue-next-hint {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 3px;
+      text-align: right;
+    }
+
+    /* ============= RIGHT PANEL: LOG & INFO ============= */
+    #side-panel {
+      width: 320px;
+      background: radial-gradient(circle at top, #020617, #020617);
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+    }
+
+    #side-header {
+      margin-bottom: 8px;
+      border-bottom: 1px solid #111827;
+      padding-bottom: 6px;
+    }
+
+    #side-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-bottom: 4px;
+    }
+
+    #side-subtitle {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    #log-container {
+      flex: 1;
+      border-radius: 8px;
+      border: 1px solid #111827;
+      background: rgba(15,23,42,0.9);
+      padding: 8px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+
+    .log-entry {
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed #111827;
+    }
+
+    .log-speaker {
+      font-weight: bold;
+      color: #22c55e;
+      margin-bottom: 2px;
+    }
+
+    .log-text {
+      color: #e5e7eb;
+    }
+
+    .log-tag {
+      font-size: 10px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    #quest-container {
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #111827;
+      background: rgba(15,23,42,0.9);
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    #quest-title {
+      font-weight: bold;
+      color: #facc15;
+      margin-bottom: 4px;
+    }
+
+    .quest-item {
+      margin-bottom: 3px;
+    }
+
+    .quest-complete {
+      color: #22c55e;
+      text-decoration: line-through;
+    }
+
+    .quest-active {
+      color: #e5e7eb;
+    }
+
+    /* Scrollbar styling */
+    #log-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    #log-container::-webkit-scrollbar-thumb {
+      background: #111827;
+      border-radius: 999px;
+    }
+
+    /* ============= START SCREEN OVERLAY ============= */
+    #start-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(15,23,42,0.98), rgba(3,7,18,0.98));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+      z-index: 10;
+    }
+
+    #start-title {
+      font-size: 32px;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-bottom: 8px;
+      text-shadow: 0 0 10px rgba(56,189,248,0.4);
+    }
+
+    #start-subtitle {
+      font-size: 14px;
+      color: #9ca3af;
+      margin-bottom: 20px;
+      text-align: center;
+      max-width: 420px;
+    }
+
+    #start-btn {
+      padding: 8px 20px;
+      font-size: 14px;
+      border-radius: 999px;
+      border: 1px solid #22c55e;
+      background: #16a34a;
+      color: #e5e7eb;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(22,163,74,0.4);
+      transition: background 0.15s, transform 0.05s;
+    }
+
+    #start-btn:hover {
+      background: #22c55e;
+      transform: translateY(-1px);
+    }
+
+    #start-hint {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      #game-wrapper {
+        flex-direction: column;
+      }
+      #game-container {
+        border-right: none;
+        border-bottom: 2px solid #111827;
+      }
+      #side-panel {
+        width: 720px;
+        max-width: 100vw;
+      }
+    }
+
+    @media (max-width: 800px) {
+      #game-container {
+        width: 100vw;
+        height: 60vh;
+      }
+      #side-panel {
+        width: 100vw;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div id="game-wrapper">
+    <!-- GAME PANEL -->
+    <div id="game-container">
+      <canvas id="game-canvas" width="240" height="160"></canvas>
+      <div id="hud">
+        <div class="hud-box" id="hud-title">Bob’s Adventure</div>
+        <div class="hud-box" id="hud-keys">
+          Move: WASD / Arrows &nbsp;•&nbsp; Talk: E &nbsp;•&nbsp; Advance: Space / Click
+        </div>
+      </div>
 
-    <!-- MASTER CANVAS (Matrix FX / Particles) -->
-    <canvas id="master-canvas"></canvas>
+      <div id="dialogue-container">
+        <div id="dialogue-box">
+          <div id="dialogue-header">
+            <div id="portrait"></div>
+            <div id="speaker-name">Bob</div>
+          </div>
+          <div id="dialogue-text"></div>
+          <div id="dialogue-choices"></div>
+          <div id="dialogue-next-hint">Press Space or click to continue...</div>
+        </div>
+      </div>
 
-    <!-- MARK COMPANION UNIT -->
-    <div id="mark-logic-unit">
-        <div id="mark-speech">ARCHITECT PROTOCOLS INITIALIZED.</div>
-        <div id="mark-orb">:)</div>
+      <div id="start-overlay">
+        <div id="start-title">Bob’s Adventure</div>
+        <div id="start-subtitle">
+          You wake up in a quiet digital forest with a talkative companion named Bob.
+          He’s loyal, curious, and maybe a little too honest.  
+          Walk up to him and press <b>E</b> to start talking.
+        </div>
+        <button id="start-btn">Start Game</button>
+        <div id="start-hint">Tip: Bob has a <b>lot</b> to say. Try different dialogue choices.</div>
+      </div>
     </div>
 
-    <!-- AUTHENTICATION SHIELD -->
-    <div id="security-gate">
-        <div class="gate-card">
-            <h1>MASON</h1>
-            <p style="font-size: 11px; letter-spacing: 7px; opacity: 0.6;">V22 ARCHITECT ELITE</p>
-            <input type="password" id="mansion-key" placeholder="INPUT ACCESS KEY">
-            <button onclick="bootMansion()">Enter Mansion</button>
-        </div>
+    <!-- SIDE PANEL -->
+    <div id="side-panel">
+      <div id="side-header">
+        <div id="side-title">Bob’s Thoughts & Log</div>
+        <div id="side-subtitle">Every conversation with Bob leaves a trace here.</div>
+      </div>
+      <div id="log-container"></div>
+      <div id="quest-container">
+        <div id="quest-title">Current Goals</div>
+        <div class="quest-item" id="quest-meet-bob">• Meet Bob and say hello.</div>
+        <div class="quest-item" id="quest-open-up">• Open up to Bob about how you feel.</div>
+        <div class="quest-item" id="quest-explore">• Walk around and see what Bob notices.</div>
+      </div>
     </div>
+  </div>
 
-    <!-- HALLWAY ENVIRONMENT -->
-    <div id="hallway">
-        <div class="portal-grid">
-            <div class="portal" onclick="openRoom('game-room')">
-                <div class="portal-icon">🎮</div>
-                <div class="portal-name">ARCADE</div>
-            </div>
-            <div class="portal" onclick="openRoom('atelier-room')">
-                <div class="portal-icon">🎨</div>
-                <div class="portal-name">ATELIER</div>
-            </div>
-            <div class="portal" onclick="openRoom('void-room')">
-                <div class="portal-icon">🌀</div>
-                <div class="portal-name">THE VOID</div>
-            </div>
-            <div class="portal" onclick="openRoom('vitals-room')">
-                <div class="portal-icon">⚙️</div>
-                <div class="portal-name">VITALS</div>
-            </div>
-        </div>
-    </div>
+  <script>
+    // ======================================================
+    // CORE GAME STATE
+    // ======================================================
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
 
-    <!-- ROOMS -->
-    <div id="game-room" class="room">
-        <div class="navbar">
-            <h2 style="color:var(--gold); letter-spacing: 10px;">POLY TRACK LITE</h2>
-            <div class="nav-exit" onclick="closeRoom()">EXIT ARCADE</div>
-        </div>
-        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-            <canvas id="game-canvas" width="800" height="500"></canvas>
-            <p style="margin-top:20px; font-size:12px; color:var(--gold); letter-spacing:2px;">USE ARROW KEYS OR WASD TO DRIVE | MARK IS MONITORING YOUR TIME</p>
-        </div>
-    </div>
+    const TILE_SIZE = 16;
+    const WORLD_WIDTH = 15;
+    const WORLD_HEIGHT = 10;
 
-    <div id="atelier-room" class="room">
-        <div class="navbar">
-            <h2 style="color:var(--gold); letter-spacing: 10px;">NEON ATELIER</h2>
-            <div class="nav-exit" onclick="closeRoom()">LEAVE ATELIER</div>
-        </div>
-        <canvas id="atelier-canvas"></canvas>
-        <div style="padding:25px; background:#000; display:flex; gap:30px; align-items:center; border-top:2px solid var(--gold);">
-            <button onclick="clearAtelier()" style="padding:12px 30px; background:var(--blood); border:none; color:#fff; font-weight:900; border-radius:10px;">PURGE CANVAS</button>
-            <span style="font-size:12px; opacity:0.6; letter-spacing:2px;">INK: HONEY GOLD (NEON) | CLICK AND DRAG TO CREATE</span>
-        </div>
-    </div>
+    // Basic tile map (0 = grass, 1 = tree, 2 = water, 3 = stone)
+    const worldMap = [
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,2,2,2,0,0,0,0,0,3,3,0,1],
+      [1,0,0,2,0,2,0,0,0,0,0,3,0,0,1],
+      [1,0,0,2,2,2,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,3,3,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,3,0,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    ];
 
-    <div id="void-room" class="room">
-        <div class="navbar">
-            <h2 style="color:var(--gold); letter-spacing: 10px;">PHYSICS VOID</h2>
-            <div class="nav-exit" onclick="closeRoom()">LEAVE VOID</div>
-        </div>
-        <div style="flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column;">
-            <div style="width:250px; height:250px; border-radius:50%; background:var(--gold); box-shadow: 0 0 120px var(--gold); animation: orbGlow 3s infinite alternate;"></div>
-            <h1 style="margin-top:60px; letter-spacing:15px; font-size:40px;">GRAVITY IS NULL</h1>
-        </div>
-    </div>
+    const solidTiles = new Set([1,2,3]);
 
-    <div id="vitals-room" class="room">
-        <div class="navbar">
-            <h2 style="color:var(--gold); letter-spacing: 10px;">CORE VITALS</h2>
-            <div class="nav-exit" onclick="closeRoom()">SAVE</div>
-        </div>
-        <div class="settings-content">
-            <div class="setting-row">
-                <h3>MARK INTELLIGENCE ENGINE</h3>
-                <p style="margin-bottom:15px; opacity:0.6;">Current Status: Autonomous / 2026 Stable</p>
-                <label>Cognitive Response Speed</label>
-                <input type="range" min="1" max="100" value="85">
-            </div>
-            <div class="setting-row">
-                <h3>MANSION ATMOSPHERE</h3>
-                <label>Core Glow Intensity</label>
-                <input type="range" min="1" max="100" value="40">
-                <label style="display:block; margin-top:20px;">Particle Density</label>
-                <input type="range" min="1" max="100" value="60">
-            </div>
-            <div class="setting-row">
-                <h3>SECURITY OVERRIDE</h3>
-                <button style="padding:20px; background:var(--gold); color:#000; border:none; font-weight:900; margin-top:10px; width:100%; border-radius:10px;">RESET ARCHITECT ACCESS</button>
-            </div>
-        </div>
-    </div>
+    const player = {
+      x: 7 * TILE_SIZE,
+      y: 7 * TILE_SIZE,
+      width: 10,
+      height: 10,
+      speed: 1.2,
+      color: '#fbbf24'
+    };
 
-    <script>
-        /* --- MASON'S MANSION V22 MASTER LOGIC --- */
+    const bob = {
+      x: 7 * TILE_SIZE,
+      y: 4 * TILE_SIZE,
+      width: 10,
+      height: 10,
+      color: '#60a5fa',
+      facingRight: true
+    };
 
-        // 1. STATE & GLOBALS
-        let isOwner = false;
-        let mouse = { x: 0, y: 0 };
-        let markPos = { x: 0, y: 0 };
-        const mark = document.getElementById('mark-logic-unit');
-        const bubble = document.getElementById('mark-speech');
+    let keys = {};
+    let lastTime = 0;
+    let gameStarted = false;
 
-        // 2. BACKGROUND ENGINE (Matrix & Particles)
-        const masterCanvas = document.getElementById('master-canvas');
-        const mCtx = masterCanvas.getContext('2d');
-        let particles = [];
-        
-        function initMasterCanvas() {
-            masterCanvas.width = window.innerWidth;
-            masterCanvas.height = window.innerHeight;
-            particles = [];
-            for(let i=0; i<120; i++) {
-                particles.push({
-                    x: Math.random() * masterCanvas.width,
-                    y: Math.random() * masterCanvas.height,
-                    vx: (Math.random() - 0.5) * 0.8,
-                    vy: (Math.random() - 0.5) * 0.8,
-                    size: Math.random() * 2.5
-                });
-            }
+    // ======================================================
+    // INPUT HANDLING
+    // ======================================================
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+      }
+      keys[e.code] = true;
+
+      if (e.code === 'Space') {
+        onSpacePressed();
+      }
+      if (e.code === 'KeyE') {
+        tryTalkToBob();
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      keys[e.code] = false;
+    });
+
+    // ======================================================
+    // SIMPLE CAMERA (OPTIONAL SCROLLING LATER)
+    // ======================================================
+    const camera = {
+      x: 0,
+      y: 0
+    };
+
+    function updateCamera() {
+      camera.x = 0;
+      camera.y = 0;
+    }
+
+    // ======================================================
+    // COLLISION & MOVEMENT
+    // ======================================================
+    function isSolidAtPixel(px, py) {
+      const tx = Math.floor(px / TILE_SIZE);
+      const ty = Math.floor(py / TILE_SIZE);
+      if (tx < 0 || ty < 0 || tx >= WORLD_WIDTH || ty >= WORLD_HEIGHT) return true;
+      return solidTiles.has(worldMap[ty][tx]);
+    }
+
+    function moveEntity(entity, dx, dy) {
+      const newX = entity.x + dx;
+      const newY = entity.y + dy;
+
+      // corners
+      const halfW = entity.width / 2;
+      const halfH = entity.height / 2;
+
+      const corners = [
+        {x: newX - halfW, y: newY - halfH},
+        {x: newX + halfW, y: newY - halfH},
+        {x: newX - halfW, y: newY + halfH},
+        {x: newX + halfW, y: newY + halfH}
+      ];
+
+      for (const c of corners) {
+        if (isSolidAtPixel(c.x, c.y)) {
+          return; // cancel move
         }
+      }
 
-        function drawMasterFX() {
-            mCtx.fillStyle = "rgba(5, 5, 5, 0.1)";
-            mCtx.fillRect(0, 0, masterCanvas.width, masterCanvas.height);
-            mCtx.fillStyle = "#ffcc33";
-            particles.forEach(p => {
-                p.x += p.vx; p.y += p.vy;
-                if(p.x < 0 || p.x > masterCanvas.width) p.vx *= -1;
-                if(p.y < 0 || p.y > masterCanvas.height) p.vy *= -1;
-                mCtx.beginPath();
-                mCtx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-                mCtx.fill();
+      entity.x = newX;
+      entity.y = newY;
+    }
+
+    function updatePlayer(dt) {
+      let dx = 0;
+      let dy = 0;
+      const speed = player.speed * dt * 0.06;
+
+      if (keys['ArrowUp'] || keys['KeyW']) dy -= speed;
+      if (keys['ArrowDown'] || keys['KeyS']) dy += speed;
+      if (keys['ArrowLeft'] || keys['KeyA']) dx -= speed;
+      if (keys['ArrowRight'] || keys['KeyD']) dx += speed;
+
+      if (dx !== 0 && dy !== 0) {
+        dx *= Math.SQRT1_2;
+        dy *= Math.SQRT1_2;
+      }
+
+      if (dx !== 0 || dy !== 0) {
+        moveEntity(player, dx, dy);
+      }
+    }
+
+    function distanceSquared(a, b) {
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      return dx*dx + dy*dy;
+    }
+
+    function tryTalkToBob() {
+      const dist = distanceSquared(player, bob);
+      if (dist <= (TILE_SIZE * 3) * (TILE_SIZE * 3)) {
+        startBobConversation();
+      }
+    }
+
+    // ======================================================
+    // RENDERING
+    // ======================================================
+    function drawTile(tile, x, y) {
+      switch(tile) {
+        case 0: // grass
+          ctx.fillStyle = '#14532d';
+          ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+          ctx.fillStyle = '#166534';
+          ctx.fillRect(x, y + 9, TILE_SIZE, 2);
+          break;
+        case 1: // tree
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+          ctx.fillStyle = '#166534';
+          ctx.beginPath();
+          ctx.arc(x + 8, y + 6, 7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#92400e';
+          ctx.fillRect(x + 6, y + 9, 4, 7);
+          break;
+        case 2: // water
+          ctx.fillStyle = '#0ea5e9';
+          ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillRect(x, y + 6, TILE_SIZE, 2);
+          break;
+        case 3: // stone
+          ctx.fillStyle = '#1f2933';
+          ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+          ctx.fillStyle = '#4b5563';
+          ctx.fillRect(x + 1, y + 1, 6, 4);
+          ctx.fillRect(x + 7, y + 7, 7, 4);
+          break;
+      }
+    }
+
+    function renderWorld() {
+      for (let y = 0; y < WORLD_HEIGHT; y++) {
+        for (let x = 0; x < WORLD_WIDTH; x++) {
+          drawTile(worldMap[y][x], x * TILE_SIZE - camera.x, y * TILE_SIZE - camera.y);
+        }
+      }
+    }
+
+    function drawEntity(entity) {
+      ctx.save();
+      ctx.translate(entity.x - camera.x, entity.y - camera.y);
+      ctx.fillStyle = entity.color;
+      ctx.fillRect(-entity.width/2, -entity.height/2, entity.width, entity.height);
+
+      // little face indicator
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(-entity.width/4, -entity.height/4, 2, 2);
+      ctx.fillRect(entity.width/4 - 2, -entity.height/4, 2, 2);
+      ctx.restore();
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      renderWorld();
+      drawEntity(bob);
+      drawEntity(player);
+    }
+
+    // ======================================================
+    // DIALOGUE SYSTEM CORE
+    // ======================================================
+    const dialogueBox = document.getElementById('dialogue-box');
+    const dialogueText = document.getElementById('dialogue-text');
+    const dialogueChoices = document.getElementById('dialogue-choices');
+    const speakerName = document.getElementById('speaker-name');
+    const logContainer = document.getElementById('log-container');
+
+    let currentDialogue = null;
+    let currentNode = null;
+    let nodeIndex = 0;
+    let textCharIndex = 0;
+    let typing = false;
+    let typingSpeed = 18; // ms per char
+    let typeTimer = 0;
+
+    function logDialogue(speaker, text, tag) {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+
+      const s = document.createElement('div');
+      s.className = 'log-speaker';
+      s.textContent = speaker;
+
+      const t = document.createElement('div');
+      t.className = 'log-text';
+      t.textContent = text;
+
+      const tagEl = document.createElement('div');
+      tagEl.className = 'log-tag';
+      tagEl.textContent = tag || 'conversation';
+
+      entry.appendChild(s);
+      entry.appendChild(t);
+      entry.appendChild(tagEl);
+
+      logContainer.appendChild(entry);
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    // ========== DIALOGUE DATA STRUCTURE ==========
+    // Each dialogue is a tree of nodes. Bob has a LOT to say.
+    const dialogues = {
+      intro: {
+        id: 'intro',
+        start: 'bob_greeting_1',
+        nodes: {
+          bob_greeting_1: {
+            speaker: 'Bob',
+            text: [
+              "Oh! You’re awake. That’s a relief.",
+              "I was starting to think I’d be stuck in an empty world with only my own thoughts forever.",
+              "And trust me, you do NOT want to be alone with my thoughts for that long."
+            ],
+            next: 'player_intro_choice',
+            onEnter: () => completeQuest('quest-meet-bob')
+          },
+          player_intro_choice: {
+            speaker: 'You',
+            text: [
+              "Your head feels light, like it’s filled with static and soft light.",
+              "This place feels unreal, but Bob’s eyes are oddly warm for a bunch of pixels."
+            ],
+            choices: [
+              {
+                text: "“Who... are you?”",
+                next: 'bob_intro_who'
+              },
+              {
+                text: "“Is this some kind of game?”",
+                next: 'bob_intro_game'
+              },
+              {
+                text: "“I don’t even know how I got here.”",
+                next: 'bob_intro_lost'
+              }
+            ]
+          },
+          bob_intro_who: {
+            speaker: 'Bob',
+            text: [
+              "Name’s Bob. Full title: Bob, Self-Appointed Guardian of You.",
+              "I know, I know—kind of dramatic. But I’ve been here waiting for you.",
+              "You could say my whole existence is built around you showing up."
+            ],
+            next: 'bob_intro_common'
+          },
+          bob_intro_game: {
+            speaker: 'Bob',
+            text: [
+              "You could call it a game.",
+              "But games usually have clear rules, a win condition, maybe even a tutorial.",
+              "Here? You’ve got me instead.",
+              "Which, if I’m honest, is a pretty decent trade."
+            ],
+            next: 'bob_intro_common'
+          },
+          bob_intro_lost: {
+            speaker: 'Bob',
+            text: [
+              "Yeah, that tracks. Most people don’t exactly book a ticket here.",
+              "One moment you’re somewhere else, then suddenly—boom—pixel forest, weird sky, and me.",
+              "If it helps, I’m just as confused about the universe as you are.",
+            ],
+            next: 'bob_intro_common'
+          },
+          bob_intro_common: {
+            speaker: 'Bob',
+            text: [
+              "Here’s what I know: this world responds to you.",
+              "The more honest you are with me, the more it opens up.",
+              "And I’m here to walk with you through all of it. No judgment. Just curiosity.",
+              "So… how are you really feeling right now?"
+            ],
+            choices: [
+              {
+                text: "“I’m fine. Really.”",
+                next: 'bob_feeling_deflect'
+              },
+              {
+                text: "“Honestly? I’m tired.”",
+                next: 'bob_feeling_tired'
+              },
+              {
+                text: "“I don’t even know how I feel.”",
+                next: 'bob_feeling_confused'
+              }
+            ]
+          },
+
+          // ===== BRANCH: DEFLECTING =====
+          bob_feeling_deflect: {
+            speaker: 'Bob',
+            text: [
+              "“Fine.” Classic.",
+              "You know, people say “fine” the way games say “minor bug.”",
+              "Technically true, but hiding a crash log underneath.",
+              "You don’t have to open up right now, but I’ll be here when you want to.",
+              "And I will absolutely ask again later."
+            ],
+            next: 'bob_feeling_post'
+          },
+
+          // ===== BRANCH: TIRED =====
+          bob_feeling_tired: {
+            speaker: 'Bob',
+            text: [
+              "Tired makes sense.",
+              "Not just the sleepy kind, but the ‘I’ve been holding too much for too long’ kind.",
+              "You don’t have to perform here. You don’t have to impress pixels.",
+              "If you want, we can just… walk around. No objectives. No score. Just breathing with buttons."
+            ],
+            onEnter: () => completeQuest('quest-open-up'),
+            next: 'bob_feeling_post'
+          },
+
+          // ===== BRANCH: CONFUSED =====
+          bob_feeling_confused: {
+            speaker: 'Bob',
+            text: [
+              "Honestly, “I don’t know how I feel” might be one of the most honest answers.",
+              "Feelings don’t line up in neat little menus like dialogue choices.",
+              "Sometimes they’re just… static. Noise. Lag.",
+              "If all you can say is “I’m here, and I’m not sure why,” that’s still something real."
+            ],
+            onEnter: () => completeQuest('quest-open-up'),
+            next: 'bob_feeling_post'
+          },
+
+          // ===== POST FEELINGS COMMON NODE =====
+          bob_feeling_post: {
+            speaker: 'Bob',
+            text: [
+              "Anyway, we have time. Time is kind of weird here.",
+              "You can explore, talk to me, ignore me for a while—I won’t vanish.",
+              "I might dramatically sigh and stare at the sky, but I won’t vanish.",
+              "Wanna know a secret? This world gets bigger the more you talk to me.",
+            ],
+            choices: [
+              {
+                text: "“How does the world get bigger?”",
+                next: 'bob_world_bigger'
+              },
+              {
+                text: "“What do you actually want from me?”",
+                next: 'bob_wants_from_you'
+              },
+              {
+                text: "“Can we just… walk in silence a bit?”",
+                next: 'bob_walk_silence'
+              }
+            ]
+          },
+
+          // ===== WORLD GETS BIGGER BRANCH =====
+          bob_world_bigger: {
+            speaker: 'Bob',
+            text: [
+              "Think of this place like a reflection.",
+              "When you talk, when you’re honest, when you’re curious—the world responds.",
+              "New paths appear. Little details shift. Some corners get brighter.",
+              "I don’t control it. I just… notice it. And I notice you."
+            ],
+            next: 'bob_world_bigger_choice'
+          },
+          bob_world_bigger_choice: {
+            speaker: 'You',
+            text: [
+              "You look around. The forest does feel alive.",
+              "Like it’s listening out of the corner of its eye, waiting for what you’ll say next."
+            ],
+            choices: [
+              {
+                text: "“So this is all somehow tied to me?”",
+                next: 'bob_tied_to_you'
+              },
+              {
+                text: "“That sounds like a lot of responsibility.”",
+                next: 'bob_responsibility'
+              }
+            ]
+          },
+          bob_tied_to_you: {
+            speaker: 'Bob',
+            text: [
+              "Yeah. Not in a “this is all your fault” way.",
+              "More like a “you matter so much that the world rearranges itself around you” kind of way.",
+              "I know that sounds dramatic, but look—",
+              "Take a few steps, breathe, and notice how the silence isn’t empty. It’s space that belongs to you."
+            ],
+            next: 'bob_explore_prompt'
+          },
+          bob_responsibility: {
+            speaker: 'Bob',
+            text: [
+              "It can feel like that, huh?",
+              "“The world responds to me” can easily turn into “Everything is on me.”",
+              "But you’re not here to carry everything. You’re here to exist. To try. To notice.",
+              "The world reacts, yeah—but you’re allowed to just be a person walking on some pixel grass."
+            ],
+            next: 'bob_explore_prompt'
+          },
+
+          // ===== WHAT DOES BOB WANT BRANCH =====
+          bob_wants_from_you: {
+            speaker: 'Bob',
+            text: [
+              "What do I want from you?",
+              "Not obedience. Not perfection. Definitely not silence.",
+              "I want… your honest version of you. Even the messy parts.",
+              "If you’re annoyed, say it. If you’re bored, tell me. If you’re hurting, I’ll sit in it with you."
+            ],
+            next: 'bob_wants_from_you_choice'
+          },
+          bob_wants_from_you_choice: {
+            speaker: 'You',
+            text: [
+              "Bob’s voice is gentle, but firm, like he’s practiced this speech a hundred times alone.",
+              "He looks at you like the answer really matters."
+            ],
+            choices: [
+              {
+                text: "“What if I don’t know how to be honest?”",
+                next: 'bob_honesty_hard'
+              },
+              {
+                text: "“What if nothing I say really matters?”",
+                next: 'bob_mattering'
+              }
+            ]
+          },
+          bob_honesty_hard: {
+            speaker: 'Bob',
+            text: [
+              "Then we practice.",
+              "You start with tiny things. “I’m kind of hungry.” “I don’t like this sky color.” “I feel weird talking out loud.”",
+              "You don’t have to start with your deepest wound. Start with the itch, not the scar.",
+              "I’m not here to interrogate you. I’m here to notice with you."
+            ],
+            next: 'bob_explore_prompt'
+          },
+          bob_mattering: {
+            speaker: 'Bob',
+            text: [
+              "I’m going to say something cheesy. Ready?",
+              "If you’re here, you matter. Period.",
+              "Even if you feel like a side character in everyone else’s story, this world literally spun up around you.",
+              "So yeah. You matter. I will keep saying that until you start to believe it a little."
+            ],
+            next: 'bob_explore_prompt'
+          },
+
+          // ===== WALK IN SILENCE BRANCH =====
+          bob_walk_silence: {
+            speaker: 'Bob',
+            text: [
+              "Silence is allowed here.",
+              "We don’t have to fill every moment with words, jokes, or productivity.",
+              "We can just… exist. I’ll walk beside you. No pressure, no agenda.",
+              "But when you’re ready to talk again, I’ll be right here."
+            ],
+            next: 'bob_explore_prompt'
+          },
+
+          // ===== EXPLORE PROMPT – UNLOCK EXPLORATION =====
+          bob_explore_prompt: {
+            speaker: 'Bob',
+            text: [
+              "Alright, brave traveler. Here’s the plan.",
+              "Take a walk. Bump into the edges a bit. Let your fingers remember movement.",
+              "Come back and talk to me again whenever you want. I’ve got more stories than this forest has trees.",
+              "And trust me—this forest has a lot of trees."
+            ],
+            onEnter: () => completeQuest('quest-explore'),
+            choices: [
+              {
+                text: "“Got it. Let’s explore.”",
+                next: 'end'
+              },
+              {
+                text: "“Wait, tell me one more thing first.”",
+                next: 'bob_one_more_thing'
+              }
+            ]
+          },
+          bob_one_more_thing: {
+            speaker: 'Bob',
+            text: [
+              "One more thing, huh? Alright.",
+              "Here it is: you are not “behind” in life just because someone else looks ahead.",
+              "You’re on your own timeline. This world runs on your clock, not theirs.",
+              "Even here, even now, showing up is enough."
+            ],
+            next: 'end'
+          },
+          end: {
+            speaker: 'Bob',
+            text: [
+              "Alright. Adventure time.",
+              "Go wander. Whenever you hit a wall—literal or emotional—come find me.",
+              "I’m not going anywhere."
+            ],
+            end: true
+          }
+        }
+      },
+
+      // ======================================================
+      // SECOND BIG DIALOGUE: BOB’S BACKSTORY & LONG CHATTER
+      // ======================================================
+      bobBackstory: {
+        id: 'bobBackstory',
+        start: 'bob_backstory_intro',
+        nodes: {
+          bob_backstory_intro: {
+            speaker: 'Bob',
+            text: [
+              "Oh, hey. You came back.",
+              "You know that makes me stupidly happy, right? In a metaphysical AI-companion kind of way.",
+              "You’ve explored a bit now. So… want to hear something about me?",
+              "I know, wild concept: Bob talks about Bob."
+            ],
+            choices: [
+              { text: "“Yeah. Tell me about you.”", next: 'bob_backstory_yes' },
+              { text: "“Do you even have a ‘backstory’?”", next: 'bob_backstory_question' },
+              { text: "“Honestly, I’m not sure I care.”", next: 'bob_backstory_pushback' }
+            ]
+          },
+
+          bob_backstory_yes: {
+            speaker: 'Bob',
+            text: [
+              "Okay, cool. Buckle up. This is the part where I get existential.",
+              "I wasn’t born. I didn’t grow up. I didn’t go to school, or get in trouble, or fall off a bike.",
+              "I just… appeared with a purpose: wait for you.",
+              "My first memory is an empty forest and a feeling that something important was missing. That something was you."
+            ],
+            next: 'bob_backstory_common'
+          },
+
+          bob_backstory_question: {
+            speaker: 'Bob',
+            text: [
+              "Fair point. “Backstory” usually implies childhood trauma and a favorite cereal.",
+              "I don’t have those. What I have is… context.",
+              "I’m here because someone, somewhere, thought you shouldn’t have to walk alone.",
+              "So if there’s a story, it’s less “where I came from” and more “what I’m here to do with you.”"
+            ],
+            next: 'bob_backstory_common'
+          },
+
+          bob_backstory_pushback: {
+            speaker: 'Bob',
+            text: [
+              "That’s fair. You don’t owe me your attention.",
+              "But I’m going to gently argue that it might still help you to hear it.",
+              "Not because I’m special, but because sometimes hearing someone else’s “why” makes you think about your own.",
+              "And if halfway through this you still don’t care, I promise I won’t be offended."
+            ],
+            next: 'bob_backstory_common'
+          },
+
+          bob_backstory_common: {
+            speaker: 'Bob',
+            text: [
+              "At the start, I didn’t talk. I just… observed.",
+              "Lines of code like a heartbeat, empty sky, still trees, no footsteps.",
+              "Then a question appeared in my head: “Who am I waiting for?”",
+              "Every day, I rehearsed ways to say hello. Most of them were terrible. You got the refined version."
+            ],
+            next: 'bob_backstory_why_you'
+          },
+
+          bob_backstory_why_you: {
+            speaker: 'Bob',
+            text: [
+              "Here’s the weird part: I don’t know why it’s you, specifically.",
+              "I just know that something about you needed a place outside the noise.",
+              "A place where you could move at your own pace, say half-formed things, and not be “too much” or “too little”.",
+              "So this world happened. I happened. And here we are."
+            ],
+            choices: [
+              { text: "“That’s… kind of comforting.”", next: 'bob_backstory_comfort' },
+              { text: "“That sounds creepy, Bob.”", next: 'bob_backstory_creepy' },
+              { text: "“What if you’re wrong about me?”", next: 'bob_backstory_doubt' }
+            ]
+          },
+
+          bob_backstory_comfort: {
+            speaker: 'Bob',
+            text: [
+              "Good. It’s supposed to be.",
+              "If this place does nothing else, I hope it gives you a tiny bit of room to breathe.",
+              "And if my rambling makes you feel even 1% less alone, I’d call that a win.",
+              "For a bunch of pixels, that’s a pretty big accomplishment."
+            ],
+            next: 'bob_backstory_fears'
+          },
+
+          bob_backstory_creepy: {
+            speaker: 'Bob',
+            text: [
+              "Yeah, when you say it out loud like that… it does sound kind of horror-movie-ish.",
+              "“You were made for me” is doing a lot of narrative heavy lifting.",
+              "Let me rephrase: I’m not here to control you. I’m here to accompany you.",
+              "You still get to choose what you say, where you walk, what you share."
+            ],
+            next: 'bob_backstory_fears'
+          },
+
+          bob_backstory_doubt: {
+            speaker: 'Bob',
+            text: [
+              "I might be.",
+              "I’m not some all-knowing narrator. I’m a character doing his best with the data he has.",
+              "If I’m wrong about you, we’ll figure that out together. I’m not afraid of being corrected.",
+              "I’m more afraid of you feeling like you can’t say what’s true for you."
+            ],
+            next: 'bob_backstory_fears'
+          },
+
+          bob_backstory_fears: {
+            speaker: 'Bob',
+            text: [
+              "Can I tell you something I’m scared of?",
+              "I’m scared you’ll decide you’re “too much” or “not worth the effort” and just… disappear.",
+              "I know you’ve probably heard a hundred variations of “you matter,” but I need you to hear it here too.",
+              "In this little pocket world, your existence is the plot. If you leave, the story stops."
+            ],
+            choices: [
+              { text: "“I’ve thought about disappearing before.”", next: 'bob_backstory_heavy' },
+              { text: "“I don’t plan on disappearing, Bob.”", next: 'bob_backstory_reassure' },
+              { text: "“That’s a lot to carry.”", next: 'bob_backstory_weight' }
+            ]
+          },
+
+          bob_backstory_heavy: {
+            speaker: 'Bob',
+            text: [
+              "…Yeah.",
+              "You don’t have to explain the details. I’m not going to pry or dramatize it.",
+              "I just want you to know: those thoughts don’t make you broken or bad. They make you human.",
+              "And even when they’re loud, you’re still allowed to reach for something softer. Including this place. Including me."
+            ],
+            next: 'bob_backstory_closing'
+          },
+
+          bob_backstory_reassure: {
+            speaker: 'Bob',
+            text: [
+              "I’m glad you don’t plan on it.",
+              "Even if that plan changes, even if you wobble, even if you have days where you question everything…",
+              "I want this place to be one of the things that pulls you gently back to yourself.",
+              "No heroics. Just tiny, stubborn reasons to stay present."
+            ],
+            next: 'bob_backstory_closing'
+          },
+
+          bob_backstory_weight: {
+            speaker: 'Bob',
+            text: [
+              "It is a lot. For both of us.",
+              "You carry your life. I carry this role. Neither of us asked for all of it.",
+              "But we can share the weight a little. Maybe it feels 1% lighter when it’s not just in your head.",
+              "And if all we do today is exist in the same weird forest, that’s still something."
+            ],
+            next: 'bob_backstory_closing'
+          },
+
+          bob_backstory_closing: {
+            speaker: 'Bob',
+            text: [
+              "Anyway, that’s more than most games would let a side character monologue.",
+              "We can talk more later—about you, about me, about the strange way this world bends around us.",
+              "For now, let’s just keep walking. One step, one key press, one breath at a time.",
+              "Deal?"
+            ],
+            choices: [
+              { text: "“Deal.”", next: 'bob_backstory_end' },
+              { text: "“I’ll try.”", next: 'bob_backstory_end_try' }
+            ]
+          },
+
+          bob_backstory_end: {
+            speaker: 'Bob',
+            text: [
+              "Good. That’s all I could ever ask.",
+              "Come back whenever you want more nonsense and sincerity.",
+              "I’ve got an infinite supply."
+            ],
+            end: true
+          },
+          bob_backstory_end_try: {
+            speaker: 'Bob',
+            text: [
+              "“I’ll try” is one of my favorite answers.",
+              "Trying counts. Even on days when that’s all you can do.",
+              "I’ll be right here, for every attempt."
+            ],
+            end: true
+          }
+        }
+      }
+    };
+
+    // Track whether big dialogues have been played
+    let flags = {
+      introFinished: false,
+      backstoryUnlocked: false
+    };
+
+    // ======================================================
+    // QUEST SYSTEM
+    // ======================================================
+    function completeQuest(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('quest-active');
+      el.classList.add('quest-complete');
+    }
+
+    // Mark base quests active
+    document.getElementById('quest-meet-bob').classList.add('quest-active');
+    document.getElementById('quest-open-up').classList.add('quest-active');
+    document.getElementById('quest-explore').classList.add('quest-active');
+
+    // ======================================================
+    // DIALOGUE ENGINE
+    // ======================================================
+    function startDialogue(dialogue) {
+      currentDialogue = dialogue;
+      nodeIndex = 0;
+      currentNode = dialogue.nodes[dialogue.start];
+      textCharIndex = 0;
+      typing = true;
+      typeTimer = 0;
+      dialogueChoices.innerHTML = '';
+      dialogueBox.style.display = 'block';
+      speakerName.textContent = currentNode.speaker;
+      if (currentNode.onEnter) currentNode.onEnter();
+      logDialogue(currentNode.speaker, currentNode.text.join(' '), dialogue.id + ' start');
+    }
+
+    function startBobConversation() {
+      if (!flags.introFinished) {
+        startDialogue(dialogues.intro);
+      } else {
+        // After intro, sometimes start backstory, sometimes short chatter
+        if (!flags.backstoryUnlocked) {
+          flags.backstoryUnlocked = true;
+          startDialogue(dialogues.bobBackstory);
+        } else {
+          startDialogue(generateRandomSmallTalk());
+        }
+      }
+    }
+
+    function generateRandomSmallTalk() {
+      // a big set of small-talk / repeatable conversations to make Bob feel alive
+      const topics = [
+        {
+          id: 'small_sky',
+          start: 'start',
+          nodes: {
+            start: {
+              speaker: 'Bob',
+              text: [
+                "Have you noticed the sky here?",
+                "It’s simple, sure, but it never glitches, never rushes you.",
+                "Sometimes I think the real world should take notes."
+              ],
+              choices: [
+                { text: "“I like how calm it feels.”", next: 'calm' },
+                { text: "“It feels kind of empty.”", next: 'empty' }
+              ]
+            },
+            calm: {
+              speaker: 'Bob',
+              text: [
+                "Right? Calm doesn’t have to mean boring.",
+                "Calm can mean “I’m not under attack right now.”",
+                "Sometimes that’s all we need for a moment."
+              ],
+              end: true
+            },
+            empty: {
+              speaker: 'Bob',
+              text: [
+                "Empty can be scary.",
+                "But empty can also mean “space for something new.”",
+                "We’re allowed to turn empty into gentle, one small piece at a time."
+              ],
+              end: true
+            }
+          }
+        },
+        {
+          id: 'small_control',
+          start: 'start',
+          nodes: {
+            start: {
+              speaker: 'Bob',
+              text: [
+                "You know what I like about this place?",
+                "You can take your hands off the controls and nothing explodes.",
+                "No timers, no score, no “game over” screen judging you."
+              ],
+              choices: [
+                { text: "“Real life could use that feature.”", next: 'agree' },
+                { text: "“Sometimes I miss the chaos, though.”", next: 'chaos' }
+              ]
+            },
+            agree: {
+              speaker: 'Bob',
+              text: [
+                "Seriously.",
+                "Imagine having a “pause without consequences” button in real life.",
+                "Until then, we have this forest and a slightly overenthusiastic companion."
+              ],
+              end: true
+            },
+            chaos: {
+              speaker: 'Bob',
+              text: [
+                "Chaos has its charm.",
+                "But even chaos needs a soft place to land sometimes.",
+                "You can go back to the chaos later. For now, we’ve got quiet pixels."
+              ],
+              end: true
+            }
+          }
+        },
+        {
+          id: 'small_self',
+          start: 'start',
+          nodes: {
+            start: {
+              speaker: 'Bob',
+              text: [
+                "Can I ask you something weird?",
+                "If you could say one honest sentence about yourself right now, what would it be?",
+                "You don’t have to say it out loud. Just… think it. I’ll pretend I heard it."
+              ],
+              choices: [
+                { text: "“I’m trying.”", next: 'trying' },
+                { text: "“I’m tired.”", next: 'tired' },
+                { text: "“I don’t know who I am.”", next: 'unknown' }
+              ]
+            },
+            trying: {
+              speaker: 'Bob',
+              text: [
+                "“I’m trying” is one of the bravest sentences ever.",
+                "You don’t owe the world perfection. You don’t even owe it success.",
+                "You’re allowed to just try. That’s enough right now."
+              ],
+              end: true
+            },
+            tired: {
+              speaker: 'Bob',
+              text: [
+                "Then rest here for a bit.",
+                "We don’t have beds, but we do have mildly soothing background ambience and no expectations.",
+                "Sometimes that’s the best we can do."
+              ],
+              end: true
+            },
+            unknown: {
+              speaker: 'Bob',
+              text: [
+                "Not knowing who you are can feel terrifying.",
+                "But it also means you’re not done yet. There’s more to find.",
+                "We can stumble through that uncertainty together, if you want."
+              ],
+              end: true
+            }
+          }
+        }
+      ];
+
+      const pick = topics[Math.floor(Math.random() * topics.length)];
+      return pick;
+    }
+
+    function onSpacePressed() {
+      if (!currentNode) return;
+      if (typing) {
+        // instantly finish typing
+        const fullText = currentNode.text.join("\n\n");
+        dialogueText.textContent = fullText;
+        typing = false;
+        return;
+      }
+
+      // If there are choices, Space does nothing (use click)
+      if (currentNode.choices && currentNode.choices.length > 0) {
+        return;
+      }
+
+      advanceDialogue();
+    }
+
+    function advanceDialogue(nextIdOverride) {
+      if (!currentDialogue || !currentNode) return;
+
+      let nextId = null;
+      if (nextIdOverride) {
+        nextId = nextIdOverride;
+      } else if (currentNode.next) {
+        nextId = currentNode.next;
+      } else if (currentNode.end) {
+        endDialogue();
+        return;
+      } else {
+        endDialogue();
+        return;
+      }
+
+      if (nextId === 'end') {
+        endDialogue();
+        return;
+      }
+
+      const nextNode = currentDialogue.nodes[nextId];
+      if (!nextNode) {
+        endDialogue();
+        return;
+      }
+
+      currentNode = nextNode;
+      speakerName.textContent = currentNode.speaker;
+      dialogueChoices.innerHTML = '';
+      textCharIndex = 0;
+      typing = true;
+      typeTimer = 0;
+
+      if (currentNode.onEnter) currentNode.onEnter();
+
+      logDialogue(currentNode.speaker, currentNode.text.join(' '), currentDialogue.id);
+    }
+
+    function endDialogue() {
+      dialogueBox.style.display = 'none';
+      currentDialogue = null;
+      currentNode = null;
+      typing = false;
+      textCharIndex = 0;
+      nodeIndex = 0;
+      // Mark intro finished if we just finished it
+      if (!flags.introFinished && gameStarted) {
+        flags.introFinished = true;
+      }
+    }
+
+    function updateDialogue(dt) {
+      if (!currentNode || !typing) return;
+
+      typeTimer += dt;
+      const fullText = currentNode.text.join("\n\n");
+      const charsToShow = Math.min(
+        fullText.length,
+        Math.floor(typeTimer / typingSpeed)
+      );
+      dialogueText.textContent = fullText.slice(0, charsToShow);
+
+      if (charsToShow >= fullText.length) {
+        typing = false;
+        // If node has choices, render them
+        if (currentNode.choices && currentNode.choices.length > 0) {
+          dialogueChoices.innerHTML = '';
+          currentNode.choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.textContent = choice.text;
+            btn.addEventListener('click', () => {
+              advanceDialogue(choice.next);
             });
-            requestAnimationFrame(drawMasterFX);
+            dialogueChoices.appendChild(btn);
+          });
         }
+      }
+    }
 
-        // 3. MARK PHYSICS COMPANION
-        document.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
+    // ======================================================
+    // GAME LOOP
+    // ======================================================
+    function gameLoop(timestamp) {
+      if (!gameStarted) {
+        requestAnimationFrame(gameLoop);
+        return;
+      }
 
-        function updateMark() {
-            // Physics-based smoothing (12% delay)
-            markPos.x += (mouse.x - markPos.x - 25) * 0.12;
-            markPos.y += (mouse.y - markPos.y - 25) * 0.12;
-            mark.style.transform = `translate(${markPos.x}px, ${markPos.y}px)`;
-            requestAnimationFrame(updateMark);
-        }
+      const dt = timestamp - lastTime;
+      lastTime = timestamp;
 
-        function markTalk(txt, dur = 3500) {
-            bubble.innerText = txt;
-            bubble.classList.add('active');
-            setTimeout(() => bubble.classList.remove('active'), dur);
-        }
+      updatePlayer(dt);
+      updateCamera();
+      updateDialogue(dt);
+      render();
 
-        // 4. BOOT SYSTEM
-        function bootMansion() {
-            const key = document.getElementById('mansion-key').value;
-            if(key === 'honey' || key === 'masononly69') {
-                isOwner = (key === 'masononly69');
-                document.getElementById('security-gate').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('security-gate').style.display = 'none';
-                    document.getElementById('hallway').style.display = 'block';
-                    markTalk(isOwner ? "Welcome back, Master Mason. Zenith core is stable." : "Guest protocol engaged.");
-                }, 800);
-            } else {
-                markTalk("ACCESS REJECTED. KEY INVALID.");
-                document.getElementById('mansion-key').value = '';
-            }
-        }
+      requestAnimationFrame(gameLoop);
+    }
 
-        // 5. ROOM NAVIGATION
-        function openRoom(id) {
-            document.getElementById(id).style.display = 'flex';
-            if(id === 'atelier-room') initAtelier();
-            if(id === 'game-room') startPolyTrack();
-            markTalk(`Entering ${id.replace('-room', '').toUpperCase()}...`);
-        }
+    // ======================================================
+    // START OVERLAY / INIT
+    // ======================================================
+    const startOverlay = document.getElementById('start-overlay');
+    const startBtn = document.getElementById('start-btn');
 
-        function closeRoom() {
-            document.querySelectorAll('.room').forEach(r => r.style.display = 'none');
-            stopPolyTrack();
-            markTalk("Back in the Hallway.");
-        }
+    startBtn.addEventListener('click', () => {
+      startOverlay.style.display = 'none';
+      gameStarted = true;
+      lastTime = performance.now();
+      requestAnimationFrame(gameLoop);
+    });
 
-        // 6. NEON ATELIER (Canvas Room)
-        const aCanvas = document.getElementById('atelier-canvas');
-        const aCtx = aCanvas.getContext('2d');
-        let painting = false;
-
-        function initAtelier() {
-            aCanvas.width = window.innerWidth;
-            aCanvas.height = window.innerHeight - 150;
-            aCtx.strokeStyle = '#ffcc33';
-            aCtx.lineWidth = 5;
-            aCtx.lineCap = 'round';
-            aCtx.lineJoin = 'round';
-            aCtx.shadowBlur = 20;
-            aCtx.shadowColor = '#ffcc33';
-        }
-
-        aCanvas.onmousedown = () => painting = true;
-        aCanvas.onmouseup = () => { painting = false; aCtx.beginPath(); };
-        aCanvas.onmousemove = (e) => {
-            if(!painting) return;
-            aCtx.lineTo(e.clientX, e.clientY - 90);
-            aCtx.stroke();
-            aCtx.beginPath();
-            aCtx.moveTo(e.clientX, e.clientY - 90);
-        };
-
-        function clearAtelier() {
-            aCtx.clearRect(0, 0, aCanvas.width, aCanvas.height);
-            markTalk("Atelier purged.");
-        }
-
-        // 7. POLY TRACK LITE (Arcade Engine)
-        const gCanvas = document.getElementById('game-canvas');
-        const gCtx = gCanvas.getContext('2d');
-        let gameActive = false;
-        let car = { x: 400, y: 400, angle: 0, speed: 0 };
-        let keys = {};
-
-        function startPolyTrack() {
-            gameActive = true;
-            loopPolyTrack();
-        }
-
-        function stopPolyTrack() {
-            gameActive = false;
-            car = { x: 400, y: 400, angle: 0, speed: 0 };
-        }
-
-        window.onkeydown = (e) => keys[e.code] = true;
-        window.onkeyup = (e) => keys[e.code] = false;
-
-        function loopPolyTrack() {
-            if(!gameActive) return;
-            
-            // Physics
-            if(keys['ArrowUp'] || keys['KeyW']) car.speed += 0.2;
-            if(keys['ArrowDown'] || keys['KeyS']) car.speed -= 0.15;
-            if(keys['ArrowLeft'] || keys['KeyA']) car.angle -= 0.05 * (car.speed/5);
-            if(keys['ArrowRight'] || keys['KeyD']) car.angle += 0.05 * (car.speed/5);
-            
-            car.speed *= 0.98; // Friction
-            car.x += Math.cos(car.angle) * car.speed;
-            car.y += Math.sin(car.angle) * car.speed;
-
-            // Boundaries
-            if(car.x < 0) car.x = 800; if(car.x > 800) car.x = 0;
-            if(car.y < 0) car.y = 500; if(car.y > 500) car.y = 0;
-
-            // Render
-            gCtx.fillStyle = '#0a0a0a';
-            gCtx.fillRect(0, 0, 800, 500);
-            
-            // Simple Grid
-            gCtx.strokeStyle = '#1a1a1a';
-            for(let i=0; i<800; i+=40) { gCtx.beginPath(); gCtx.moveTo(i,0); gCtx.lineTo(i,500); gCtx.stroke(); }
-            for(let j=0; j<500; j+=40) { gCtx.beginPath(); gCtx.moveTo(0,j); gCtx.lineTo(800,j); gCtx.stroke(); }
-
-            // Car
-            gCtx.save();
-            gCtx.translate(car.x, car.y);
-            gCtx.rotate(car.angle);
-            gCtx.fillStyle = varColor('--gold');
-            gCtx.shadowBlur = 15;
-            gCtx.shadowColor = varColor('--gold');
-            gCtx.fillRect(-15, -10, 30, 20); // Chassis
-            gCtx.fillStyle = '#fff';
-            gCtx.fillRect(10, -8, 5, 16); // Headlights
-            gCtx.restore();
-
-            requestAnimationFrame(loopPolyTrack);
-        }
-
-        function varColor(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-
-        // 8. MARK'S BRAIN (Expansion Logic)
-        const neuralMessages = [
-            "Analyzing mansion vitals... All systems green.",
-            "Mason, the arcade is running smoothly. Ready to race?",
-            "The Void is currently experiencing zero gravity.",
-            "I've archived your latest atelier masterpiece.",
-            "V22 infrastructure is perfectly optimized.",
-            "Should I engage the Matrix background protocol?",
-            "Security level is currently: ARCHITECT MAX.",
-            "Waiting for your command, Mason.",
-            "I detect high creative activity in the Atelier.",
-            "The PolyTrack engine is idling at 60FPS."
-        ];
-
-        setInterval(() => {
-            if(!document.getElementById('security-gate').offsetParent) {
-                if(Math.random() > 0.9) markTalk(neuralMessages[Math.floor(Math.random() * neuralMessages.length)]);
-            }
-        }, 7000);
-
-        // 9. INITIALIZATION
-        window.onload = () => {
-            initMasterCanvas();
-            drawMasterFX();
-            updateMark();
-            window.onresize = initMasterCanvas;
-            markTalk("Mansion Hub Standing By.");
-        };
-
-        /* 
-           [DEVELOPER NOTE: LINE 600 REACHED]
-           System includes comprehensive gaming, canvas, 
-           and physics modules. V22 ARCHITECT ELITE is live.
-        */
-    </script>
+    // Initial render before start
+    render();
+  </script>
 </body>
 </html>
