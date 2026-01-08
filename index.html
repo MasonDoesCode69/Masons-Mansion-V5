@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mason’s Mansion | V8 Supernova</title>
+    <title>Mason’s Mansion | MADNESS EDITION</title>
     <style>
         :root {
-            --bg: #010103;
+            --bg: #000000;
             --accent: #00f2ff;
-            --glow: rgba(0, 242, 255, 0.4);
-            --glass: rgba(10, 10, 20, 0.9);
+            --glow: rgba(0, 242, 255, 0.5);
+            --glass: rgba(15, 15, 30, 0.95);
             --border: rgba(255, 255, 255, 0.1);
             --text: #ffffff;
-            --font: 'Segoe UI', system-ui, sans-serif;
+            --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
@@ -24,69 +24,98 @@
 
         #bg-canvas { position: fixed; inset: 0; z-index: 0; }
 
-        /* --- AUTH --- */
+        /* --- CREDITS & LOGIN --- */
         #auth-overlay {
             position: fixed; inset: 0; z-index: 10000;
             display: flex; align-items: center; justify-content: center;
-            background: #000; backdrop-filter: blur(20px); transition: 1s;
+            background: radial-gradient(circle, #0a0a1a 0%, #000 100%); transition: 1.2s cubic-bezier(0.85, 0, 0.15, 1);
         }
-        .login-card {
-            background: var(--glass); padding: 40px; border-radius: 30px;
-            border: 1px solid var(--border); text-align: center; width: 350px;
+        .login-card { 
+            background: var(--glass); padding: 50px; border-radius: 40px; 
+            border: 2px solid var(--accent); text-align: center; width: 450px; 
+            box-shadow: 0 0 60px var(--glow); backdrop-filter: blur(40px);
         }
-        .login-card input {
-            width: 100%; background: #000; border: 1px solid var(--border);
-            padding: 12px; border-radius: 10px; color: #fff; margin-bottom: 10px; text-align: center;
+        .login-card h1 { 
+            color: var(--accent); letter-spacing: 8px; margin-bottom: 5px; 
+            font-size: 32px; text-shadow: 0 0 15px var(--accent);
         }
-        .login-card button {
-            width: 100%; padding: 12px; border-radius: 10px; border: none;
-            background: var(--accent); color: #000; font-weight: 900; cursor: pointer;
+        .credits-text {
+            font-size: 12px; color: #fff; opacity: 0.8; letter-spacing: 3px;
+            margin-bottom: 30px; text-transform: uppercase; font-weight: bold;
         }
+        .login-card input { 
+            width: 100%; background: rgba(0,0,0,0.7); border: 1px solid var(--border); 
+            padding: 15px; border-radius: 12px; color: #fff; margin-bottom: 15px; 
+            text-align: center; font-size: 18px; 
+        }
+        .login-card button { 
+            width: 100%; padding: 15px; border-radius: 12px; border: none; 
+            background: var(--accent); color: #000; font-weight: 900; 
+            cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .login-card button:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
 
-        /* --- SIDEBAR --- */
+        /* --- SIDEBAR MADNESS --- */
         #sidebar {
-            position: fixed; left: -220px; top: 50%; transform: translateY(-50%);
-            width: 200px; background: var(--glass); border: 1px solid var(--border);
-            padding: 15px; border-radius: 0 20px 20px 0; z-index: 2000;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-height: 80vh; overflow-y: auto;
+            position: fixed; left: -280px; top: 50%; transform: translateY(-50%);
+            width: 270px; background: var(--glass); border: 1px solid var(--border);
+            padding: 20px; border-radius: 0 30px 30px 0; z-index: 2000;
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            max-height: 90vh; overflow-y: auto;
         }
-        #sidebar.open { left: 0; }
+        #sidebar.open { left: 0; box-shadow: 0 0 50px var(--accent); }
         #sidebar-tab {
-            position: absolute; right: -40px; top: 50%; transform: translateY(-50%);
-            background: var(--accent); color: #000; padding: 10px;
-            border-radius: 0 10px 10px 0; cursor: pointer; font-weight: bold; writing-mode: vertical-rl;
+            position: absolute; right: -50px; top: 50%; transform: translateY(-50%);
+            background: var(--accent); color: #000; padding: 15px 10px;
+            border-radius: 0 15px 15px 0; cursor: pointer; font-weight: 900; 
+            writing-mode: vertical-rl; font-size: 14px; box-shadow: 5px 0 15px var(--glow);
         }
 
-        .option-btn {
-            width: 100%; padding: 8px; margin: 4px 0; background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border); color: #fff; border-radius: 5px;
-            font-size: 10px; cursor: pointer; text-align: left;
+        .option-btn { 
+            width: 100%; padding: 14px; margin: 8px 0; background: rgba(255,255,255,0.05); 
+            border: 1px solid var(--border); color: #fff; border-radius: 12px; 
+            font-size: 12px; cursor: pointer; text-align: left; transition: 0.2s;
+            display: flex; justify-content: space-between;
         }
+        .option-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
         .option-btn.active { background: var(--accent); color: #000; font-weight: bold; }
 
         /* --- DESKTOP --- */
         #desktop { position: relative; width: 100vw; height: 100vh; z-index: 10; display: none; }
-        .window {
-            position: absolute; background: var(--glass);
-            border: 1px solid var(--border); border-radius: 15px;
-            backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            overflow: hidden; display: flex; flex-direction: column;
+        .window { 
+            position: absolute; background: var(--glass); border: 1px solid var(--border); 
+            border-radius: 20px; backdrop-filter: blur(30px); 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8); overflow: hidden; 
+            display: flex; flex-direction: column; min-width: 350px; min-height: 200px;
         }
-        .win-header { padding: 10px 15px; background: rgba(255,255,255,0.05); cursor: move; display: flex; justify-content: space-between; }
-        .win-close { cursor: pointer; color: #ff5f56; }
-
-        #taskbar {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--glass); border: 1px solid var(--border);
-            padding: 10px 20px; border-radius: 15px; display: flex; gap: 15px;
+        .win-header { 
+            padding: 15px 20px; background: rgba(255,255,255,0.05); 
+            cursor: move; display: flex; justify-content: space-between; align-items: center;
         }
-        .t-icon { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 10px; cursor: pointer; font-size: 20px; transition: 0.2s; }
-        .t-icon:hover { transform: translateY(-5px); background: var(--accent); color: #000; }
+        .win-title { font-size: 11px; font-weight: 900; color: var(--accent); letter-spacing: 2px; }
+        .win-close { cursor: pointer; color: #ff5f56; font-size: 22px; font-weight: bold; }
 
-        .vip-border { border: 2px solid var(--accent) !important; animation: glowPulse 2s infinite alternate; }
-        @keyframes glowPulse { from { box-shadow: 0 0 5px var(--accent); } to { box-shadow: 0 0 20px var(--accent); } }
-        iframe { width: 100%; height: 100%; border: none; background: #000; }
+        /* --- TASKBAR --- */
+        #taskbar { 
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); 
+            background: rgba(10,10,20,0.9); border: 1px solid var(--border); 
+            padding: 10px 30px; border-radius: 25px; display: flex; gap: 20px; 
+            z-index: 1000; backdrop-filter: blur(20px);
+        }
+        .t-icon { 
+            width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; 
+            background: rgba(255,255,255,0.03); border-radius: 18px; cursor: pointer; 
+            font-size: 28px; transition: 0.3s; 
+        }
+        .t-icon:hover { transform: translateY(-15px); background: var(--accent); color: #000; box-shadow: 0 0 30px var(--accent); }
+
+        .owner-border { border: 2px solid transparent !important; animation: rainbowBorder 3s infinite linear; }
+        @keyframes rainbowBorder { 0% { border-color: red; } 20% { border-color: yellow; } 40% { border-color: lime; } 60% { border-color: cyan; } 80% { border-color: magenta; } 100% { border-color: red; } }
+
+        .setting-row { padding: 15px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+        input[type="range"] { accent-color: var(--accent); width: 120px; cursor: pointer; }
+        iframe { width: 100%; height: 100%; border: none; background: #000; border-radius: 0 0 20px 20px; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -96,35 +125,40 @@
 
     <div id="auth-overlay">
         <div class="login-card">
-            <h1 style="color:var(--accent); letter-spacing: 5px; margin-bottom: 20px;">MASON V8</h1>
-            <input type="password" id="sys-pass" placeholder="ENTER KEY">
-            <button onclick="Mansion.init()">LOGIN</button>
+            <h1>MASON'S MANSION</h1>
+            <p class="credits-text">Created by Mason Porrazzo</p>
+            <input type="password" id="sys-pass" placeholder="ENTER ACCESS KEY">
+            <button onclick="Mansion.init()">START MADNESS</button>
         </div>
     </div>
 
     <div id="desktop">
         <div id="sidebar">
-            <div id="sidebar-tab" onclick="document.getElementById('sidebar').classList.toggle('open')">PHYSICS LAB</div>
-            <h4 style="font-size: 12px; color: var(--accent); margin-bottom: 10px;">BUBBLE MODS</h4>
-            <button class="option-btn" onclick="Mansion.addOrb()">+ Add Bubble (H)</button>
-            <button class="option-btn" id="m-trails" onclick="Mansion.toggle('trails')">1. Bubble Trails</button>
-            <button class="option-btn" id="m-magnet" onclick="Mansion.toggle('magnet')">2. Magnetize</button>
-            <button class="option-btn" id="m-antigrav" onclick="Mansion.toggle('antigrav')">3. Anti-Gravity</button>
-            <button class="option-btn" id="m-ghost" onclick="Mansion.toggle('ghost')">4. Ghost Mode</button>
-            <button class="option-btn" id="m-speed" onclick="Mansion.toggle('speed')">5. Speed Demon</button>
-            <button class="option-btn" id="m-bots" onclick="Mansion.toggle('bots')">6. Mini-Bots</button>
-            <button class="option-btn" id="m-vibrate" onclick="Mansion.toggle('vibrate')">7. Vibration</button>
-            <button class="option-btn" id="m-shadow" onclick="Mansion.toggle('shadow')">8. Shadow Pulse</button>
-            <button class="option-btn" id="m-chaos" onclick="Mansion.toggle('chaos')">9. Chaos Flux</button>
-            <button class="option-btn" id="m-rainbow" onclick="Mansion.toggle('rainbow')">10. Rainbow Hit</button>
-            <p style="font-size: 9px; opacity: 0.5; margin-top: 10px;">* Click bubbles to POP them!</p>
+            <div id="sidebar-tab" onclick="document.getElementById('sidebar').classList.toggle('open')">BUBBLE MADNESS LAB</div>
+            <h4 style="font-size: 10px; color: var(--accent); margin-bottom: 10px; letter-spacing: 2px;">MADNESS MODS</h4>
+            
+            <button class="option-btn active" onclick="Mansion.chaosBurst()"><span>SPAWN SWARM</span><span>[H]</span></button>
+            <button class="option-btn active" id="m-rgb" onclick="Mansion.toggle('rgb')">RGB FLASHING</button>
+            <button class="option-btn" id="m-trails" onclick="Mansion.toggle('trails')">GHOST TRAILS</button>
+            <button class="option-btn" id="m-magnet" onclick="Mansion.toggle('magnet')">ORB MAGNETISM</button>
+            <button class="option-btn" id="m-antigrav" onclick="Mansion.toggle('antigrav')">ZERO GRAVITY</button>
+            <button class="option-btn" id="m-speed" onclick="Mansion.toggle('speed')">WARP SPEED</button>
+            <button class="option-btn" id="m-vibrate" onclick="Mansion.toggle('vibrate')">JITTER MADNESS</button>
+            <button class="option-btn" id="m-chaos" onclick="Mansion.toggle('chaos')">TOTAL ENTROPY</button>
+            <button class="option-btn" id="m-shadow" onclick="Mansion.toggle('shadow')">VOID BUBBLES</button>
+            
+            <hr style="opacity: 0.1; margin: 15px 0;">
+            <p style="font-size: 10px; opacity: 0.5; text-align: center;">Press 'H' for instant 10 bubbles.<br>Press 'B' for Blackhole.</p>
         </div>
 
         <div id="win-layer"></div>
+
         <div id="taskbar">
-            <div class="t-icon" onclick="Mansion.spawn('games')">🎮</div>
-            <div class="t-icon" onclick="Mansion.spawn('themes')">🎨</div>
-            <div id="owner-icon" class="t-icon hidden" onclick="Mansion.spawn('owner')">👑</div>
+            <div class="t-icon" title="Gladihoppers" onclick="Mansion.spawn('games')">🎮</div>
+            <div class="t-icon" title="Themes" onclick="Mansion.spawn('themes')">🎨</div>
+            <div class="t-icon" title="Bubble Settings" onclick="Mansion.spawn('settings')">⚙️</div>
+            <div class="t-icon" title="Browser" onclick="Mansion.spawn('browser')">🌐</div>
+            <div id="owner-icon" class="t-icon hidden" title="Mason God Mode" onclick="Mansion.spawn('owner')">👑</div>
         </div>
     </div>
 
@@ -133,52 +167,95 @@
             rank: 'guest',
             orbs: [],
             isMouseDown: false,
-            mods: { trails: false, magnet: false, antigrav: false, ghost: false, speed: false, bots: false, vibrate: false, shadow: false, chaos: false, rainbow: false },
+            freeze: false, blackhole: false, possess: false,
+            // Core Config
+            boundary: 120,
+            gravity: 0,
+            baseRadius: 40,
+            mods: { rgb: true, trails: false, magnet: false, antigrav: false, speed: false, vibrate: false, shadow: false, chaos: false },
+            themes: [
+                { n: 'Cyberpunk', a: '#00f2ff', g: 'rgba(0, 242, 255, 0.4)' },
+                { n: 'Hellfire', a: '#ff0044', g: 'rgba(255, 0, 68, 0.4)' },
+                { n: 'Emerald', a: '#00ff88', g: 'rgba(0, 255, 136, 0.4)' },
+                { n: 'Royal', a: '#bd00ff', g: 'rgba(189, 0, 255, 0.4)' }
+            ],
 
             init() {
                 const p = document.getElementById('sys-pass').value;
                 if(p === "masononly69") { this.rank = "OWNER"; document.getElementById('owner-icon').classList.remove('hidden'); this.boot(); }
                 else if(p === "vip67") { this.rank = "VIP"; this.boot(); }
                 else if(p === "honey") { this.rank = "MEMBER"; this.boot(); }
-                else { alert("INVALID"); }
+                else { alert("INVALID ACCESS KEY"); }
             },
 
             boot() {
-                document.getElementById('auth-overlay').style.display = "none";
-                document.getElementById('desktop').style.display = "block";
+                document.getElementById('auth-overlay').style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById('auth-overlay').style.display = "none";
+                    document.getElementById('desktop').style.display = "block";
+                }, 1000);
                 this.initEngine();
             },
 
             toggle(m) {
                 this.mods[m] = !this.mods[m];
-                document.getElementById('m-'+m).classList.toggle('active');
+                document.getElementById('m-'+m)?.classList.toggle('active');
             },
 
-            addOrb() {
+            addOrb(x, y) {
                 const c = document.getElementById('bg-canvas');
                 this.orbs.push({
-                    x: Math.random() * c.width, y: Math.random() * c.height,
-                    r: Math.random() * 40 + 20,
-                    vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4,
-                    color: getComputedStyle(document.documentElement).getPropertyValue('--glow')
+                    x: x || Math.random() * c.width,
+                    y: y || Math.random() * c.height,
+                    r: Math.random() * 25 + this.baseRadius,
+                    vx: (Math.random() - 0.5) * 8, 
+                    vy: (Math.random() - 0.5) * 8,
+                    hue: Math.random() * 360
                 });
+            },
+
+            chaosBurst() {
+                for(let i=0; i<12; i++) this.addOrb();
             },
 
             spawn(type) {
                 const id = 'w-' + Math.random().toString(36).substr(2, 5);
                 const win = document.createElement('div');
-                win.className = 'window' + (this.rank !== 'MEMBER' ? ' vip-border' : '');
-                win.id = id; win.style.width = "400px"; win.style.height = "300px";
-                win.style.left = "30%"; win.style.top = "20%";
-                win.innerHTML = `<div class="win-header" onmousedown="Mansion.drag(event, '${id}')"><span>${type}</span><span class="win-close" onclick="this.parentElement.parentElement.remove()">×</span></div>
-                                 <div style="padding:20px;">${type === 'games' ? '<button class="option-btn active" onclick="Mansion.play()">Play Gladihoppers</button>' : 'Rank: ' + this.rank}</div>`;
+                win.className = 'window' + (this.rank === 'OWNER' ? ' owner-border' : '');
+                win.id = id; win.style.width = "400px"; win.style.left = "30%"; win.style.top = "20%";
+                
+                let body = '';
+                if(type === 'settings') {
+                    body = `<div style="padding:10px;">
+                        <div class="setting-row"><span>Push Force</span><input type="range" min="30" max="400" value="${this.boundary}" oninput="Mansion.boundary=this.value"></div>
+                        <div class="setting-row"><span>Bubble Size</span><input type="range" min="10" max="150" value="${this.baseRadius}" oninput="Mansion.baseRadius=parseInt(this.value)"></div>
+                        <div class="setting-row"><span>Gravity</span><input type="range" min="-1" max="1" step="0.1" value="${this.gravity}" oninput="Mansion.gravity=parseFloat(this.value)"></div>
+                    </div>`;
+                } else if(type === 'themes') {
+                    body = `<div style="padding:15px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">${this.themes.map(t=>`<button class="option-btn" style="text-align:center" onclick="Mansion.setTheme('${t.n}')">${t.n}</button>`).join('')}</div>`;
+                } else if(type === 'games') {
+                    body = `<div style="padding:20px; text-align:center;"><button class="option-btn active" style="justify-content:center" onclick="Mansion.play('gladi')">Launch Gladihoppers</button></div>`;
+                } else if(type === 'browser') {
+                    body = `<div style="padding:20px; text-align:center;"><p style="font-size:11px; margin-bottom:10px;">Proxy Browser Powered by Mansion</p><button class="option-btn" style="justify-content:center" onclick="window.open('https://google.com')">Open Google (New Tab)</button></div>`;
+                } else if(type === 'owner') {
+                    body = `<div style="padding:20px;"><h3 style="color:var(--accent)">MASON ADMIN</h3><button class="option-btn" onclick="Mansion.orbs=[]">PURGE ALL</button><button class="option-btn" onclick="Mansion.possess=!Mansion.possess">Toggle Swarm (C)</button></div>`;
+                }
+
+                win.innerHTML = `<div class="win-header" onmousedown="Mansion.drag(event, '${id}')"><span class="win-title">${type}</span><span class="win-close" onclick="this.parentElement.parentElement.remove()">×</span></div><div>${body}</div>`;
                 document.getElementById('win-layer').appendChild(win);
             },
 
-            play() {
+            setTheme(n) {
+                const t = this.themes.find(x=>x.n===n);
+                document.documentElement.style.setProperty('--accent', t.a);
+                document.documentElement.style.setProperty('--glow', t.g);
+            },
+
+            play(game) {
                 const win = document.createElement('div');
-                win.className = 'window vip-border'; win.style.width="90%"; win.style.height="90%"; win.style.left="5%"; win.style.top="5%";
-                win.innerHTML = `<div class="win-header"><span>Gladihoppers</span><span class="win-close" onclick="this.parentElement.parentElement.remove()">×</span></div><iframe src="https://xfrapo.github.io/projectroyal/projects/gladihoppers/index.html"></iframe>`;
+                win.className = 'window owner-border'; win.style.width="90%"; win.style.height="85%"; win.style.left="5%"; win.style.top="7%";
+                let url = game === 'gladi' ? 'https://xfrapo.github.io/projectroyal/projects/gladihoppers/index.html' : '';
+                win.innerHTML = `<div class="win-header"><span>UNBLOCKED GAME PORTAL</span><span class="win-close" onclick="this.parentElement.parentElement.remove()">×</span></div><iframe src="${url}"></iframe>`;
                 document.getElementById('win-layer').appendChild(win);
             },
 
@@ -198,69 +275,65 @@
                 window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
                 window.addEventListener('mousedown', (e) => {
                     this.isMouseDown = true;
-                    // Pop Mechanic
+                    // Pop bubbles on click
                     this.orbs = this.orbs.filter(o => Math.sqrt((o.x-e.clientX)**2 + (o.y-e.clientY)**2) > o.r);
                 });
                 window.addEventListener('mouseup', () => this.isMouseDown = false);
                 window.addEventListener('keydown', e => { 
-                    if(e.key.toLowerCase() === 'h') this.addOrb();
-                    if(e.key.toLowerCase() === 'w') this.orbs.forEach(o => { o.x = Math.random()*c.width; o.y = Math.random()*c.height; });
+                    if(e.key.toLowerCase() === 'h') this.chaosBurst();
+                    if(this.rank === "OWNER") {
+                        if(e.key.toLowerCase() === 'b') this.blackhole = !this.blackhole;
+                        if(e.key.toLowerCase() === 'c') this.possess = !this.possess;
+                    }
                 });
 
                 const resize = () => { c.width = window.innerWidth; c.height = window.innerHeight; };
                 window.onresize = resize; resize();
-                for(let i=0; i<30; i++) this.addOrb();
+                for(let i=0; i<45; i++) this.addOrb();
 
                 const draw = () => {
-                    if (!this.mods.trails) {
-                        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg');
-                        ctx.fillRect(0,0,c.width,c.height);
-                    } else {
-                        ctx.fillStyle = "rgba(1, 1, 3, 0.1)"; // Trail effect
-                        ctx.fillRect(0,0,c.width,c.height);
-                    }
+                    ctx.fillStyle = this.mods.trails ? "rgba(0,0,0,0.15)" : getComputedStyle(document.documentElement).getPropertyValue('--bg');
+                    ctx.fillRect(0,0,c.width,c.height);
 
                     this.orbs.forEach((o, i) => {
-                        let dx = o.x - mouse.x, dy = o.y - mouse.y;
-                        let dist = Math.sqrt(dx*dx + dy*dy);
+                        if(!this.freeze) {
+                            o.vy += this.gravity;
+                            let dx = o.x - mouse.x, dy = o.y - mouse.y;
+                            let dist = Math.sqrt(dx*dx + dy*dy);
+                            
+                            // Cursor interaction
+                            if(dist < this.boundary) {
+                                let f = (this.boundary - dist) / this.boundary;
+                                let m = (this.isMouseDown || this.blackhole) ? -10 : 8;
+                                o.vx += (dx/dist) * f * m; o.vy += (dy/dist) * f * m;
+                            }
+
+                            if(this.possess) { o.vx += (mouse.x - o.x)*0.1; o.vy += (mouse.y - o.y)*0.1; }
+                            if(this.mods.antigrav) o.vy -= 0.5;
+                            if(this.mods.speed) { o.vx *= 1.15; o.vy *= 1.15; }
+                            if(this.mods.chaos) { o.vx += (Math.random()-0.5)*6; o.vy += (Math.random()-0.5)*6; }
+                            if(this.mods.magnet) {
+                                this.orbs.forEach((o2, j) => { if(i!==j){ let d2x=o2.x-o.x, d2y=o2.y-o.y; let d2=Math.sqrt(d2x*d2x+d2y*d2y); if(d2<150){o.vx+=d2x*0.007; o.vy+=d2y*0.007;}}});
+                            }
+
+                            o.vx *= 0.94; o.vy *= 0.94;
+                            o.x += o.vx; o.y += o.vy;
+
+                            if(o.x<0 || o.x>c.width) o.vx *= -1;
+                            if(o.y<0 || o.y>c.height) o.vy *= -1;
+                        }
+
+                        if(this.mods.vibrate) { o.x += (Math.random()-0.5)*12; o.y += (Math.random()-0.5)*12; }
+                        if(this.mods.rgb) { o.hue = (o.hue + 4) % 360; }
                         
-                        // Cursor Logic
-                        if(dist < 100) {
-                            let f = (100 - dist) / 100;
-                            let m = this.isMouseDown ? -2 : 3;
-                            o.vx += (dx/dist) * f * m; o.vy += (dy/dist) * f * m;
-                        }
-
-                        // MODS
-                        if(this.mods.antigrav) o.vy -= 0.15;
-                        if(this.mods.speed) { o.vx *= 1.05; o.vy *= 1.05; }
-                        if(this.mods.chaos) { o.vx += (Math.random()-0.5); o.vy += (Math.random()-0.5); }
-                        if(this.mods.vibrate) { o.x += (Math.random()-0.5)*5; o.y += (Math.random()-0.5)*5; }
-                        if(this.mods.magnet) {
-                            this.orbs.forEach((o2, i2) => {
-                                if(i !== i2) {
-                                    let d2x = o2.x - o.x, d2y = o2.y - o.y;
-                                    let d2 = Math.sqrt(d2x*d2x + d2y*d2y);
-                                    if(d2 < 200) { o.vx += d2x*0.001; o.vy += d2y*0.001; }
-                                }
-                            });
-                        }
-
-                        o.vx *= 0.97; o.vy *= 0.97;
-                        o.x += o.vx; o.y += o.vy;
-
-                        // Wall Logic
-                        if(o.x<0 || o.x>c.width) { o.vx *= -1; if(this.mods.rainbow) o.color = `hsla(${Math.random()*360}, 100%, 50%, 0.5)`; }
-                        if(o.y<0 || o.y>c.height) { o.vy *= -1; if(this.mods.rainbow) o.color = `hsla(${Math.random()*360}, 100%, 50%, 0.5)`; }
-
-                        let r = this.mods.bots ? o.r/4 : o.r;
+                        let r = o.r;
                         let g = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, r);
-                        let baseColor = this.mods.rainbow ? o.color : getComputedStyle(document.documentElement).getPropertyValue('--glow');
+                        let color = this.mods.rgb ? `hsla(${o.hue}, 100%, 50%, 0.6)` : getComputedStyle(document.documentElement).getPropertyValue('--glow');
                         
-                        g.addColorStop(0, this.mods.shadow ? "rgba(0,0,0,1)" : baseColor);
+                        g.addColorStop(0, this.mods.shadow ? "#000" : color);
                         g.addColorStop(1, "transparent");
                         
-                        ctx.globalCompositeOperation = this.mods.ghost ? "screen" : "source-over";
+                        ctx.globalCompositeOperation = "lighter";
                         ctx.fillStyle = g;
                         ctx.beginPath(); ctx.arc(o.x, o.y, r, 0, Math.PI*2); ctx.fill();
                     });
