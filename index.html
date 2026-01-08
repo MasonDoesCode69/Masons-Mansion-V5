@@ -2,298 +2,236 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mason’s Mansion | V18.2026 Architect</title>
     <style>
-        :root {
-            --bg: #020205; --accent: #ffcc33; --glow: rgba(255, 204, 51, 0.5);
-            --glass: rgba(20, 20, 30, 0.7); --border: rgba(255, 255, 255, 0.15);
-            --font-main: 'Orbitron', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+        :root { 
+            --accent: #ffcc33; --bg: #05050a; --glass: rgba(15, 15, 25, 0.85); 
+            --glow: rgba(255, 204, 51, 0.4); --font-mono: 'JetBrains Mono', monospace;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: #fff; font-family: var(--font-main); cursor: crosshair; }
+        body, html { margin: 0; padding: 0; background: var(--bg); overflow: hidden; font-family: 'Orbitron', sans-serif; cursor: none; color: white; }
+        canvas#bg-layer { position: fixed; inset: 0; z-index: -1; }
         
-        /* --- M.A.R.K INTERFACE --- */
-        #ai-interface { position: fixed; top: 120px; left: 40px; width: 400px; z-index: 2000; }
-        #mark-face { width: 120px; height: 120px; border: 3px solid var(--accent); border-radius: 50%; margin-bottom: 25px; position: relative; box-shadow: 0 0 50px var(--glow); background: radial-gradient(circle, #111, #000); }
-        .eye-socket { width: 30px; height: 30px; background: rgba(255,255,255,0.03); border-radius: 50%; position: absolute; top: 35px; overflow: hidden; border: 1px solid var(--border); }
-        .eye-socket.left { left: 25px; } .eye-socket.right { right: 25px; }
-        .pupil { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: 0.05s linear; box-shadow: 0 0 15px var(--accent); }
-        #mouth { width: 40px; height: 15px; border-bottom: 3px solid var(--accent); border-radius: 0 0 30px 30px; position: absolute; bottom: 30px; left: 37px; }
-        #ai-bubble { background: var(--glass); border: 1px solid var(--border); padding: 20px; border-radius: 20px; font-size: 13px; font-family: var(--font-mono); line-height: 1.6; border-left: 6px solid var(--accent); backdrop-filter: blur(50px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        /* THE NEURAL HAND */
+        #neural-hand { width: 14px; height: 14px; background: var(--accent); position: fixed; border-radius: 50%; pointer-events: none; z-index: 10000; box-shadow: 0 0 20px var(--accent); transition: transform 0.05s linear; }
 
-        /* --- V18 DESKTOP & WINDOWS --- */
-        .window { position: absolute; background: var(--glass); border: 1px solid var(--border); display: none; flex-direction: column; z-index: 3000; border-radius: 20px; overflow: hidden; backdrop-filter: blur(80px); box-shadow: 0 40px 100px #000; }
-        .win-bar { padding: 15px 25px; background: rgba(255,255,255,0.08); cursor: move; display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 3px; font-weight: 900; }
-        .close-btn { color: #ff4444; cursor: pointer; font-size: 18px; }
-
-        /* --- GAME GRIDS --- */
-        .grid-container { padding: 20px; background: #000; }
-        .c4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-        .c4-cell { width: 40px; height: 40px; background: #1a1a1a; border-radius: 50%; border: 1px solid #333; cursor: pointer; }
-        .c4-cell.p1 { background: var(--accent); box-shadow: 0 0 15px var(--glow); }
-        .c4-cell.p2 { background: #ff4444; box-shadow: 0 0 15px rgba(255,68,68,0.4); }
-
-        .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; color: var(--accent); border-radius: 10px; }
-
-        /* --- MONOPOLY BOARD --- */
-        .mono-board { display: grid; grid-template-columns: repeat(4, 70px); grid-template-rows: repeat(4, 70px); gap: 5px; background: #111; padding: 10px; }
-        .m-tile { border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; position: relative; background: #050505; }
-        .m-tile.owned0 { border: 2px solid var(--accent); }
-        .m-tile.owned1 { border: 2px solid #ff4444; }
-        .p-token { width: 12px; height: 12px; border-radius: 50%; position: absolute; bottom: 5px; }
-
-        /* --- UI ELEMENTS --- */
-        #taskbar { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%); background: var(--glass); border: 1px solid var(--border); padding: 12px 40px; border-radius: 100px; display: flex; gap: 30px; z-index: 5000; backdrop-filter: blur(40px); }
-        .icon { font-size: 30px; cursor: pointer; transition: 0.4s; filter: grayscale(1); }
-        .icon:hover { transform: scale(1.3) translateY(-10px); filter: grayscale(0); }
+        /* M.A.R.K INTERFACE (EXPRESSIVE) */
+        #ai-interface { position: fixed; top: 40px; left: 40px; width: 300px; z-index: 2000; }
+        #mark-face { width: 80px; height: 80px; border: 2px solid var(--accent); border-radius: 50%; margin-bottom: 15px; position: relative; box-shadow: 0 0 30px var(--glow); background: #000; }
+        .eye { width: 20px; height: 4px; background: var(--accent); position: absolute; top: 30px; transition: 0.3s; }
+        .eye.left { left: 15px; } .eye.right { right: 15px; }
+        #mouth { width: 30px; height: 2px; background: var(--accent); position: absolute; bottom: 20px; left: 25px; transition: 0.3s; }
         
-        #win-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        #hud { position: fixed; top: 40px; right: 50px; text-align: right; pointer-events: none; }
-        #time { font-size: 64px; color: var(--accent); font-weight: 900; letter-spacing: 5px; }
-        .hidden { display: none !important; }
+        /* MOODS */
+        .thinking .eye { height: 10px; border-radius: 50%; }
+        .happy #mouth { height: 10px; border-radius: 0 0 20px 20px; background: transparent; border-bottom: 3px solid var(--accent); }
+        .win #mark-face { box-shadow: 0 0 50px #ff4444; border-color: #ff4444; }
+
+        /* WINDOWS & GRIDS */
+        .window { position: absolute; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; backdrop-filter: blur(15px); display: none; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 5000; }
+        .win-header { padding: 10px 15px; background: rgba(255,255,255,0.05); cursor: move; display: flex; justify-content: space-between; font-size: 10px; color: var(--accent); letter-spacing: 2px; }
+        .game-grid { display: grid; padding: 15px; gap: 8px; background: #000; }
+        .ttt-grid { grid-template-columns: repeat(3, 80px); }
+        .cell { width: 80px; height: 80px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--accent); transition: 0.2s; }
+        .cell:hover { background: rgba(255, 204, 51, 0.05); }
+
+        /* MONOPOLY SPECIFIC */
+        .mono-board { display: grid; grid-template-columns: repeat(4, 60px); grid-template-rows: repeat(4, 60px); gap: 4px; padding: 10px; background: #000; }
+        .m-tile { border: 1px solid #222; font-size: 8px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .p-token { width: 8px; height: 8px; border-radius: 50%; position: absolute; }
+
+        #taskbar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--glass); padding: 10px 30px; border-radius: 50px; display: flex; gap: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .icon { font-size: 24px; cursor: none; filter: grayscale(1); transition: 0.3s; }
+        .icon:hover { filter: grayscale(0); transform: scale(1.2); }
+
+        #win-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
+    <canvas id="bg-layer"></canvas>
+    <div id="neural-hand"></div>
+
+    <div id="ai-interface">
+        <div id="mark-face">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div id="mouth"></div>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent);">M.A.R.K V18: <span id="ai-status">WAITING</span></div>
+    </div>
 
     <div id="win-overlay">
-        <h1 id="win-text" style="color:var(--accent); font-size:4rem; letter-spacing:15px;">SYSTEM WIN</h1>
-        <button onclick="location.reload()" style="margin-top:40px; padding:15px 40px; background:none; border:2px solid var(--accent); color:var(--accent); font-family:var(--font-mono); cursor:pointer;">REINITIALIZE</button>
+        <h1 id="win-text" style="color:var(--accent); letter-spacing:10px;">CORE BREACH</h1>
+        <button onclick="location.reload()" style="background:none; border:1px solid var(--accent); color:var(--accent); padding:10px 30px; margin-top:20px; font-family: 'Orbitron';">REBOOT_SYSTEM</button>
     </div>
 
-    <div id="auth-wrap" style="position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; background:#000;">
-        <div style="text-align:center; width:350px;">
-            <h1 style="color:var(--accent); margin-bottom:30px; letter-spacing:10px;">ARCHITECT_V18</h1>
-            <input type="password" id="sys-pass" placeholder="ACCESS KEY" style="width:100%; background:#111; border:1px solid #333; padding:15px; color:var(--accent); margin-bottom:20px; border-radius:10px; text-align:center;">
-            <button onclick="OS.boot()" style="width:100%; padding:15px; background:var(--accent); color:#000; font-weight:bold; border:none; cursor:pointer; border-radius:10px;">INITIALIZE</button>
-        </div>
+    <div id="win-ttt" class="window" style="top:150px; left:400px;">
+        <div class="win-header"><span>NEURAL_XO</span><span onclick="System.close('ttt')">×</span></div>
+        <div class="game-grid ttt-grid" id="ttt-board"></div>
     </div>
 
-    <div id="desktop" class="hidden">
-        <div id="hud">
-            <div id="time">00:00:00</div>
-            <div style="font-family:var(--font-mono); opacity:0.6; font-size:14px;">SYS_STATUS: OPTIMAL | 01.08.2026</div>
-        </div>
+    <div id="win-mono" class="window" style="top:200px; left:500px;">
+        <div class="win-header"><span>CYBER_MONO</span><span onclick="System.close('mono')">×</span></div>
+        <div class="mono-board" id="mono-board"></div>
+        <div style="padding: 10px; font-size: 10px; color: var(--accent);" id="mono-stats">BAL: $1500</div>
+        <button onclick="System.monoMove()" style="background: var(--accent); border: none; padding: 10px; font-weight: bold;">ROLL_NEURAL_DICE</button>
+    </div>
 
-        <div id="ai-interface">
-            <div id="mark-face">
-                <div class="eye-socket left"><div class="pupil"></div></div>
-                <div class="eye-socket right"><div class="pupil"></div></div>
-                <div id="mouth"></div>
-            </div>
-            <div id="ai-bubble">M.A.R.K: Neural engines calibrated. Ready for simulation, Mason.</div>
-        </div>
-
-        <!-- Tic Tac Toe -->
-        <div id="win-ttt" class="window" style="top:100px; left:500px; width:320px;">
-            <div class="win-bar"><span>TACTICAL_XO</span><span class="close-btn" onclick="OS.close('ttt')">×</span></div>
-            <div class="grid-container"><div class="ttt-grid" id="ttt-board"></div></div>
-        </div>
-
-        <!-- Connect 4 -->
-        <div id="win-c4" class="window" style="top:200px; left:600px; width:380px;">
-            <div class="win-bar"><span>NEURAL_C4</span><span class="close-btn" onclick="OS.close('c4')">×</span></div>
-            <div class="grid-container"><div class="c4-grid" id="c4-board"></div></div>
-        </div>
-
-        <!-- Monopoly -->
-        <div id="win-mono" class="window" style="top:150px; left:450px; width:340px;">
-            <div class="win-bar"><span>CYBER_MONOPOLY</span><span class="close-btn" onclick="OS.close('mono')">×</span></div>
-            <div class="grid-container">
-                <div id="mono-stats" style="font-size:10px; margin-bottom:10px; color:var(--accent);">M: $1500 | AI: $1500</div>
-                <div class="mono-board" id="mono-board"></div>
-                <button onclick="Game.monoRoll()" style="width:100%; margin-top:10px; background:var(--accent); border:none; padding:10px; font-weight:bold; cursor:pointer;">ROLL DICE</button>
-            </div>
-        </div>
-
-        <div id="taskbar">
-            <div class="icon" onclick="OS.open('ttt')" title="Tic-Tac-Toe">⚔️</div>
-            <div class="icon" onclick="OS.open('c4')" title="Connect 4">🔴</div>
-            <div class="icon" onclick="OS.open('mono')" title="Monopoly">🏦</div>
-        </div>
+    <div id="taskbar">
+        <div class="icon" onclick="System.open('ttt')">⚔️</div>
+        <div class="icon" onclick="System.open('mono')">🏦</div>
     </div>
 
     <script>
-        const OS = {
-            boot() {
-                const p = document.getElementById('sys-pass').value;
-                if(["honey", "vip420", "masononly69", ""].includes(p)) {
-                    document.getElementById('auth-wrap').classList.add('hidden');
-                    document.getElementById('desktop').classList.remove('hidden');
-                    this.initClock();
-                    this.initEyes();
-                    Game.init();
-                }
-            },
-            initClock() { setInterval(() => { document.getElementById('time').innerText = new Date().toLocaleTimeString('en-GB'); }, 1000); },
-            initEyes() {
-                document.addEventListener('mousemove', (e) => {
-                    document.querySelectorAll('.pupil').forEach(p => {
-                        const r = p.parentElement.getBoundingClientRect();
-                        const angle = Math.atan2(e.clientY - (r.top + 15), e.clientX - (r.left + 15));
-                        const d = Math.min(8, Math.hypot(e.clientX - (r.left + 15), e.clientY - (r.top + 15)) / 20);
-                        p.style.transform = `translate(calc(-50% + ${Math.cos(angle)*d}px), calc(-50% + ${Math.sin(angle)*d}px))`;
-                    });
-                });
-            },
-            open(id) { document.getElementById('win-' + id).style.display = 'flex'; },
-            close(id) { document.getElementById('win-' + id).style.display = 'none'; },
-            announce(txt) {
-                const over = document.getElementById('win-overlay');
-                document.getElementById('win-text').innerText = txt;
-                over.style.display = 'flex';
+        // 1. BACKGROUND ENGINE
+        class ParticleSystem {
+            constructor() {
+                this.canvas = document.getElementById('bg-layer');
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                window.addEventListener('resize', () => this.resize());
+                this.resize();
+                this.init();
             }
-        };
+            resize() { this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight; }
+            init() { for(let i=0; i<60; i++) this.particles.push({x: Math.random()*this.canvas.width, y: Math.random()*this.canvas.height, vx: Math.random()-0.5, vy: Math.random()-0.5}); }
+            draw() {
+                this.ctx.clearRect(0,0,this.canvas.width, this.canvas.height);
+                this.ctx.strokeStyle = "rgba(255, 204, 51, 0.1)";
+                this.particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy;
+                    if(p.x<0 || p.x>this.canvas.width) p.vx *= -1;
+                    if(p.y<0 || p.y>this.canvas.height) p.vy *= -1;
+                    this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 1, 0, Math.PI*2); this.ctx.stroke();
+                });
+                requestAnimationFrame(() => this.draw());
+            }
+        }
 
-        const Game = {
-            tttData: Array(9).fill(null),
-            c4Data: Array(6).fill().map(() => Array(7).fill(0)),
-            mono: { pos: [0, 0], bal: [1500, 1500], owners: Array(12).fill(null) },
-
-            init() {
-                // Tic Tac Toe Init
-                const tb = document.getElementById('ttt-board');
-                for(let i=0; i<9; i++) {
-                    let c = document.createElement('div'); c.className = 'ttt-cell';
-                    c.onclick = () => this.tttMove(i);
-                    tb.appendChild(c);
-                }
-                // Connect 4 Init
-                const cb = document.getElementById('c4-board');
-                for(let r=0; r<6; r++) {
-                    for(let c=0; c<7; c++) {
-                        let div = document.createElement('div');
-                        div.className = 'c4-cell';
-                        div.id = `c4-${r}-${c}`;
-                        div.onclick = () => this.c4Move(c);
-                        cb.appendChild(div);
-                    }
-                }
-                // Monopoly Init
-                this.renderMono();
-            },
-
-            // --- TIC TAC TOE (UNBEATABLE MINIMAX) ---
-            tttMove(i) {
-                if(this.tttData[i] || this.checkTTTWin(this.tttData)) return;
-                this.tttData[i] = 'X'; this.drawTTT();
-                if(!this.checkTTTWin(this.tttData)) {
-                    let bestScore = -Infinity; let move;
-                    for(let j=0; j<9; j++) {
-                        if(!this.tttData[j]) {
-                            this.tttData[j] = 'O';
-                            let score = this.minimax(this.tttData, 0, false);
-                            this.tttData[j] = null;
-                            if(score > bestScore) { bestScore = score; move = j; }
-                        }
-                    }
-                    this.tttData[move] = 'O'; this.drawTTT();
-                }
-                const res = this.checkTTTWin(this.tttData);
-                if(res) OS.announce(res === 'X' ? "MASON WINS" : "AI DOMINANCE");
-            },
-            minimax(board, depth, isMax) {
-                let res = this.checkTTTWin(board);
-                if(res === 'O') return 10; if(res === 'X') return -10; if(!board.includes(null)) return 0;
+        // 2. UNBEATABLE TTT AI
+        class TicTacToeAI {
+            constructor() { this.board = Array(9).fill(null); }
+            checkWinner(b) {
+                const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+                for(let [a,b_idx,c] of wins) if(b[a] && b[a]===b[b_idx] && b[a]===b[c]) return b[a];
+                return b.includes(null) ? null : 'draw';
+            }
+            minimax(b, depth, alpha, beta, isMax) {
+                let res = this.checkWinner(b);
+                if(res === 'O') return 10 - depth;
+                if(res === 'X') return depth - 10;
+                if(res === 'draw') return 0;
                 if(isMax) {
                     let best = -Infinity;
-                    for(let i=0; i<9; i++) if(!board[i]) { board[i]='O'; best=Math.max(best, this.minimax(board, depth+1, false)); board[i]=null; }
+                    for(let i=0; i<9; i++) if(!b[i]) {
+                        b[i]='O'; best = Math.max(best, this.minimax(b, depth+1, alpha, beta, false));
+                        b[i]=null; alpha = Math.max(alpha, best); if(beta <= alpha) break;
+                    }
                     return best;
                 } else {
                     let best = Infinity;
-                    for(let i=0; i<9; i++) if(!board[i]) { board[i]='X'; best=Math.min(best, this.minimax(board, depth+1, true)); board[i]=null; }
+                    for(let i=0; i<9; i++) if(!b[i]) {
+                        b[i]='X'; best = Math.min(best, this.minimax(b, depth+1, alpha, beta, true));
+                        b[i]=null; beta = Math.min(beta, best); if(beta <= alpha) break;
+                    }
                     return best;
                 }
-            },
-            drawTTT() {
-                const cells = document.querySelectorAll('.ttt-cell');
-                this.tttData.forEach((v, i) => cells[i].innerText = v || '');
-            },
-            checkTTTWin(b) {
-                const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-                for(let l of lines) if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[0]]===b[l[2]]) return b[l[0]];
-                return null;
+            }
+            getBestMove() {
+                let bestVal = -Infinity; let move = -1;
+                for(let i=0; i<9; i++) if(!this.board[i]) {
+                    this.board[i] = 'O';
+                    let moveVal = this.minimax(this.board, 0, -Infinity, Infinity, false);
+                    this.board[i] = null;
+                    if(moveVal > bestVal) { bestVal = moveVal; move = i; }
+                }
+                return move;
+            }
+        }
+
+        // 3. SYSTEM CORE
+        const System = {
+            ttt: new TicTacToeAI(),
+            mono: { pos: 0, bal: 1500, owners: Array(12).fill(null) },
+            
+            init() {
+                new ParticleSystem().draw();
+                this.renderTTT();
+                this.renderMono();
+                document.addEventListener('mousemove', e => {
+                    const h = document.getElementById('neural-hand');
+                    h.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+                });
             },
 
-            // --- CONNECT 4 (HEURISTIC HARD AI) ---
-            c4Move(col) {
-                for(let r=5; r>=0; r--) {
-                    if(this.c4Data[r][col] === 0) {
-                        this.c4Data[r][col] = 1; this.updateC4();
-                        setTimeout(() => this.c4AI(), 400);
-                        return;
-                    }
-                }
-            },
-            c4AI() {
-                let move = Math.floor(Math.random()*7); // Fallback
-                // Simple block logic: if player is about to win, block them
-                for(let c=0; c<7; c++) {
-                    for(let r=5; r>=0; r--) {
-                        if(this.c4Data[r][c] === 0) {
-                            this.c4Data[r][c] = 2;
-                            if(this.checkC4Win(2)) { this.updateC4(); return; }
-                            this.c4Data[r][c] = 0; break;
-                        }
-                    }
-                }
-                // AI move
-                for(let r=5; r>=0; r--) { if(this.c4Data[r][move] === 0) { this.c4Data[r][move] = 2; break; } }
-                this.updateC4();
-                if(this.checkC4Win(2)) OS.announce("AI DOMINANCE");
-            },
-            updateC4() {
-                for(let r=0; r<6; r++) {
-                    for(let c=0; c<7; c++) {
-                        const el = document.getElementById(`c4-${r}-${c}`);
-                        el.className = 'c4-cell' + (this.c4Data[r][c] === 1 ? ' p1' : this.c4Data[r][c] === 2 ? ' p2' : '');
-                    }
-                }
-            },
-            checkC4Win(p) {
-                // Vertical/Horizontal/Diagonal checks (Simplified for space)
-                return false; // Win logic logic is standard
+            setMood(mood, status) {
+                const f = document.getElementById('mark-face');
+                f.className = mood;
+                document.getElementById('ai-status').innerText = status;
             },
 
-            // --- CYBER MONOPOLY ---
-            renderMono() {
-                const mb = document.getElementById('mono-board'); mb.innerHTML = '';
-                const names = ["GO", "NYC", "TOK", "FREE", "LDN", "PAR", "JAIL", "HK", "BER", "TAX", "LA", "SEA"];
-                for(let i=0; i<12; i++) {
-                    let t = document.createElement('div');
-                    t.className = `m-tile ${this.mono.owners[i] !== null ? 'owned'+this.mono.owners[i] : ''}`;
-                    t.innerHTML = `<span>${names[i]}</span>`;
-                    if(this.mono.pos[0] === i) t.innerHTML += `<div class="p-token" style="background:var(--accent); left:5px;"></div>`;
-                    if(this.mono.pos[1] === i) t.innerHTML += `<div class="p-token" style="background:#ff4444; right:5px;"></div>`;
-                    mb.appendChild(t);
-                }
-                document.getElementById('mono-stats').innerText = `MASON: $${this.mono.bal[0]} | AI: $${this.mono.bal[1]}`;
+            // TTT Logic
+            renderTTT() {
+                const container = document.getElementById('ttt-board');
+                container.innerHTML = '';
+                this.ttt.board.forEach((val, i) => {
+                    const c = document.createElement('div');
+                    c.className = 'cell'; c.innerText = val || '';
+                    c.onclick = () => this.playerMove(i);
+                    container.appendChild(c);
+                });
             },
-            monoRoll() {
-                this.mono.pos[0] = (this.mono.pos[0] + Math.floor(Math.random()*6+1)) % 12;
-                this.processTile(0);
+            playerMove(i) {
+                if(this.ttt.board[i]) return;
+                this.ttt.board[i] = 'X'; this.renderTTT();
+                this.setMood('thinking', 'CALCULATING_COUNTER');
+                if(this.ttt.checkWinner(this.ttt.board)) return this.endGame();
+                
                 setTimeout(() => {
-                    this.mono.pos[1] = (this.mono.pos[1] + Math.floor(Math.random()*6+1)) % 12;
-                    this.processTile(1);
-                    this.renderMono();
+                    const aiMove = this.ttt.getBestMove();
+                    this.ttt.board[aiMove] = 'O'; this.renderTTT();
+                    this.setMood('', 'AWAITING_INPUT');
+                    if(this.ttt.checkWinner(this.ttt.board)) this.endGame();
                 }, 600);
             },
-            processTile(p) {
-                let tile = this.mono.pos[p];
-                if(tile === 0) this.mono.bal[p] += 200;
-                else if(this.mono.owners[tile] === null) {
-                    if(p === 1 || confirm("Buy Property? $200")) {
-                        this.mono.bal[p] -= 200; this.mono.owners[tile] = p;
-                    }
-                } else if(this.mono.owners[tile] !== p) {
-                    this.mono.bal[p] -= 150; this.mono.bal[this.mono.owners[tile]] += 150;
+
+            // Monopoly Logic
+            renderMono() {
+                const b = document.getElementById('mono-board'); b.innerHTML = '';
+                for(let i=0; i<12; i++) {
+                    const t = document.createElement('div');
+                    t.className = 'm-tile';
+                    t.style.borderColor = this.mono.owners[i] === 'AI' ? '#ff4444' : '#222';
+                    if(this.mono.pos === i) t.innerHTML = '<div class="p-token" style="background:var(--accent)"></div>';
+                    b.appendChild(t);
                 }
-                if(this.mono.bal[0] <= 0) OS.announce("AI BANKRUPTED YOU");
-                if(this.mono.bal[1] <= 0) OS.announce("MASON WINS");
-            }
+                document.getElementById('mono-stats').innerText = `BALANCE: $${this.mono.bal}`;
+            },
+            monoMove() {
+                this.mono.pos = (this.mono.pos + Math.floor(Math.random()*6)+1) % 12;
+                if(this.mono.owners[this.mono.pos] === 'AI') {
+                    this.mono.bal -= 200;
+                    this.setMood('happy', 'RENT_COLLECTED');
+                } else {
+                    this.mono.owners[this.mono.pos] = 'AI';
+                    this.mono.bal -= 100;
+                    this.setMood('thinking', 'ASSET_ACQUIRED');
+                }
+                this.renderMono();
+                if(this.mono.bal <= 0) this.endGame("BANKRUPTCY");
+            },
+
+            endGame(reason) {
+                const res = this.ttt.checkWinner(this.ttt.board);
+                this.setMood('win', 'TERMINATED');
+                document.getElementById('win-text').innerText = reason || (res === 'X' ? "MASON_WIN" : "AI_DOMINANCE");
+                document.getElementById('win-overlay').style.display = 'flex';
+            },
+
+            open(id) { document.getElementById('win-'+id).style.display = 'flex'; },
+            close(id) { document.getElementById('win-'+id).style.display = 'none'; }
         };
+
+        System.init();
     </script>
 </body>
 </html>
