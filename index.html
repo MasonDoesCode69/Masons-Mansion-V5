@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mason’s Mansion | V17.2026 Architect</title>
-    <link href="fonts.googleapis.com" rel="stylesheet">
     <style>
         :root {
             --bg: #010103; --accent: #ffcc33; --glow: rgba(255, 204, 51, 0.4);
@@ -13,73 +12,59 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: #fff; font-family: var(--font-main); cursor: crosshair; }
-        canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-
-        /* --- M.A.R.K HAND (SVG EMBED) --- */
-        #mark-hand {
-            position: fixed; width: 45px; height: 45px; z-index: 10000; pointer-events: none;
-            transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28); filter: drop-shadow(0 0 10px var(--accent));
-        }
-
-        /* --- AUTH SCREEN --- */
-        #auth-wrap { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); transition: 1.2s; }
-        .login-box { width: 500px; padding: 60px; background: var(--glass); backdrop-filter: blur(40px); border: 1px solid var(--border); text-align: center; border-radius: 20px; box-shadow: 0 0 80px rgba(0,0,0,0.8); }
-        .login-box h1 { font-family: 'Syncopate'; letter-spacing: 15px; font-size: 20px; color: var(--accent); margin-bottom: 40px; }
-        .login-box input { width: 100%; background: #000; border: 1px solid var(--border); padding: 20px; color: var(--accent); text-align: center; margin-bottom: 25px; border-radius: 10px; font-family: var(--font-mono); font-size: 18px; letter-spacing: 10px; }
-        .login-btn { width: 100%; padding: 20px; background: var(--accent); color: #000; font-weight: 900; border: none; cursor: pointer; letter-spacing: 8px; border-radius: 10px; font-family: var(--font-main); transition: 0.3s; }
-
+        body, html { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; cursor: crosshair; }
+        
         /* --- M.A.R.K UI --- */
         #ai-interface { position: fixed; top: 150px; left: 40px; width: 380px; z-index: 2000; }
-        #mark-face { width: 100px; height: 100px; border: 4px solid var(--accent); border-radius: 50%; margin-bottom: 30px; position: relative; box-shadow: 0 0 40px var(--glow); }
-        .eye-socket { width: 25px; height: 25px; background: rgba(0,0,0,0.5); border-radius: 50%; position: absolute; top: 30px; overflow: hidden; }
+        #mark-face { width: 100px; height: 100px; border: 4px solid var(--accent); border-radius: 50%; margin-bottom: 30px; position: relative; box-shadow: 0 0 40px var(--glow); background: #000; }
+        .eye-socket { width: 25px; height: 25px; background: rgba(0,0,0,0.5); border-radius: 50%; position: absolute; top: 30px; overflow: hidden; border: 1px solid var(--border); }
         .eye-socket.left { left: 20px; } .eye-socket.right { right: 20px; }
-        .pupil { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; top: 7px; left: 7px; }
+        .pupil { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); transition: 0.1s ease-out; box-shadow: 0 0 10px var(--accent); }
         #mouth { width: 35px; height: 12px; border-bottom: 4px solid var(--accent); border-radius: 0 0 25px 25px; position: absolute; bottom: 25px; left: 33px; }
         #ai-bubble { background: var(--glass); border: 1px solid var(--border); padding: 25px; border-radius: 15px; font-size: 13px; font-family: var(--font-mono); color: #eee; margin-bottom: 15px; border-left: 5px solid var(--accent); backdrop-filter: blur(20px); }
-        #ai-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 20px; color: var(--accent); font-family: var(--font-mono); border-radius: 12px; }
+        #ai-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 15px; color: var(--accent); font-family: var(--font-mono); border-radius: 12px; }
 
-        /* --- CONNECT 4 --- */
-        .c4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 15px; background: #000; border-radius: 10px; }
-        .c4-cell { width: 40px; height: 40px; background: #222; border-radius: 50%; cursor: pointer; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; }
-        .c4-cell.player { background: var(--accent); }
-        .c4-cell.ai { background: #ff4444; }
+        /* --- AUTH SCREEN --- */
+        #auth-wrap { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #000; }
+        .login-box { width: 400px; padding: 40px; background: var(--glass); border: 1px solid var(--border); text-align: center; border-radius: 20px; }
+        .login-box input { width: 100%; background: #000; border: 1px solid var(--border); padding: 15px; color: var(--accent); margin-bottom: 20px; border-radius: 10px; text-align: center; }
+        .login-btn { width: 100%; padding: 15px; background: var(--accent); color: #000; font-weight: bold; border: none; cursor: pointer; border-radius: 10px; }
 
-        /* --- TASKBAR & HUD --- */
-        #taskbar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--glass); border: 1px solid var(--border); padding: 15px 50px; border-radius: 100px; display: flex; gap: 40px; z-index: 5000; backdrop-filter: blur(30px); }
-        .icon { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; transition: 0.4s; border-radius: 50%; }
-        .icon:hover { transform: translateY(-20px); background: var(--accent); color: #000; }
-        #hud { position: fixed; top: 40px; right: 40px; text-align: right; pointer-events: none; }
-        #time { font-size: 72px; font-weight: 900; color: var(--accent); letter-spacing: 12px; line-height: 1; }
+        /* --- GAMES --- */
+        .c4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 15px; background: #111; }
+        .c4-cell { width: 35px; height: 35px; background: #222; border-radius: 50%; cursor: pointer; border: 1px solid #333; }
+        .c4-cell.p1 { background: var(--accent); }
+        .c4-cell.p2 { background: #ff4444; }
+
+        .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 20px; }
+        .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; cursor: pointer; color: var(--accent); }
 
         /* --- WINDOWS --- */
-        .window { position: absolute; background: var(--glass); border: 1px solid var(--border); display: none; flex-direction: column; z-index: 3000; border-radius: 20px; overflow: hidden; backdrop-filter: blur(60px); box-shadow: 0 50px 100px #000; }
-        .win-bar { padding: 20px 30px; background: rgba(255,255,255,0.05); cursor: move; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; letter-spacing: 4px; border-bottom: 1px solid var(--border); }
+        .window { position: absolute; background: var(--glass); border: 1px solid var(--border); display: none; flex-direction: column; z-index: 3000; border-radius: 15px; overflow: hidden; backdrop-filter: blur(40px); top: 100px; left: 500px; }
+        .win-bar { padding: 15px 20px; background: rgba(255,255,255,0.1); cursor: move; display: flex; justify-content: space-between; font-size: 12px; letter-spacing: 2px; }
+        
+        #taskbar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--glass); border: 1px solid var(--border); padding: 10px 30px; border-radius: 50px; display: flex; gap: 20px; z-index: 5000; }
+        .icon { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: 0.3s; }
+        .icon:hover { transform: translateY(-10px); color: var(--accent); }
+        #hud { position: fixed; top: 40px; right: 40px; text-align: right; }
+        #time { font-size: 48px; color: var(--accent); font-weight: bold; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <canvas id="bg-canvas"></canvas>
-    
-    <!-- M.A.R.K Hand (Embedded SVG) -->
-    <svg id="mark-hand" viewBox="0 0 512 512" xmlns="www.w3.org">
-        <path d="M421.3 148.6c-11.4-11.4-30-11.4-41.4 0l-103.9 104-103.9-104c-11.4-11.4-30-11.4-41.4 0-11.4 11.4-11.4 30 0 41.4l124.6 124.7c11.4 11.4 30 11.4 41.4 0l124.6-124.7c11.4-11.4 11.4-30 0-41.4z" fill="var(--accent)" />
-        <rect x="236" y="240" width="40" height="200" rx="20" fill="var(--accent)" />
-    </svg>
-
     <div id="auth-wrap">
         <div class="login-box">
-            <h1>ARCHITECT_V17</h1>
+            <h1 style="color:var(--accent); margin-bottom:20px;">ARCHITECT_V17</h1>
             <input type="password" id="sys-pass" placeholder="ACCESS KEY">
-            <button class="login-btn" onclick="OS.init()">BOOT SYSTEM</button>
+            <button class="login-btn" onclick="OS.boot()">BOOT SYSTEM</button>
         </div>
     </div>
 
     <div id="desktop" class="hidden">
         <div id="hud">
-            <div id="time">00:00:00</div>
-            <div style="font-size:12px; font-family:var(--font-mono); opacity:0.5;">JANUARY 08, 2026</div>
+            <div id="time">00:00</div>
+            <div style="opacity:0.5; font-size:12px;">JANUARY 08, 2026</div>
         </div>
 
         <div id="ai-interface">
@@ -88,177 +73,143 @@
                 <div class="eye-socket right"><div class="pupil" id="p-r"></div></div>
                 <div id="mouth"></div>
             </div>
-            <div id="ai-bubble">M.A.R.K: Welcome home, Mason. My Neural Connect 4 engine is primed for total domination.</div>
-            <input type="text" id="ai-input" placeholder="TALK TO M.A.R.K..." onkeypress="OS.talk(event)">
+            <div id="ai-bubble">M.A.R.K: Awaiting instructions, Mason. System stable.</div>
+            <input type="text" id="ai-input" placeholder="COMMAND...">
         </div>
 
-        <!-- Connect 4 Window -->
-        <div id="win-c4" class="window" style="width:350px; height:450px;">
-            <div class="win-bar"><span>🔴 NEURAL_C4</span><span onclick="OS.close('c4')" style="cursor:pointer">×</span></div>
+        <!-- Connect 4 -->
+        <div id="win-c4" class="window">
+            <div class="win-bar"><span>CONNECT_4</span><span onclick="OS.close('c4')">×</span></div>
             <div class="c4-grid" id="c4-board"></div>
-            <div id="c4-status" style="padding:15px; text-align:center; font-size:11px; font-family:var(--font-mono); color:var(--accent);">M.A.R.K: DROP YOUR CHIP.</div>
         </div>
 
-        <!-- Taskbar -->
+        <!-- Tic Tac Toe -->
+        <div id="win-ttt" class="window">
+            <div class="win-bar"><span>TIC_TAC_TOE</span><span onclick="OS.close('ttt')">×</span></div>
+            <div class="ttt-grid" id="ttt-board"></div>
+        </div>
+
+        <!-- Diagnostics -->
+        <div id="win-diag" class="window" style="width:300px; padding:20px;">
+            <div class="win-bar"><span>DIAGNOSTICS</span><span onclick="OS.close('diag')">×</span></div>
+            <div id="diag-content" style="font-family:var(--font-mono); font-size:10px; color:var(--accent);">
+                > CPU: 4.2GHz <br> > MEMORY: 64GB <br> > NEURAL LINK: ACTIVE <br> > MASON_ID: VERIFIED
+            </div>
+        </div>
+
         <div id="taskbar">
-            <div class="icon" title="Connect 4" onclick="OS.open('c4')">🔴</div>
-            <div class="icon" title="Tic-Tac-Toe" onclick="OS.open('ttt')">⚔️</div>
-            <div class="icon" title="Themes" onclick="OS.open('themes')">🎨</div>
-            <div id="owner-icon" class="icon hidden" title="Root Access">👑</div>
+            <div class="icon" onclick="OS.open('c4')">🔴</div>
+            <div class="icon" onclick="OS.open('ttt')">⚔️</div>
+            <div class="icon" onclick="OS.open('diag')">📟</div>
         </div>
     </div>
 
     <script>
         const OS = {
-            c4Board: Array(6).fill().map(() => Array(7).fill(null)),
-            isGameOver: false,
-            init() {
+            c4Data: Array(6).fill().map(() => Array(7).fill(0)),
+            tttData: Array(9).fill(null),
+            
+            boot() {
                 const p = document.getElementById('sys-pass').value;
-                if(["honey", "vip420", "masononly69", "v16", ""].includes(p)) {
-                    if(p === "masononly69") document.getElementById('owner-icon').classList.remove('hidden');
-                    if(p === "vip420") document.documentElement.style.setProperty('--accent', '#00f2ff');
-                    
-                    document.getElementById('auth-wrap').style.transform = "translateY(-100%)";
-                    setTimeout(() => {
-                        document.getElementById('auth-wrap').classList.add('hidden');
-                        document.getElementById('desktop').classList.remove('hidden');
-                        this.startParticles();
-                        this.updateClock();
-                        this.initC4();
-                        this.initEyeTrack();
-                    }, 1000);
+                if(["honey", "vip420", "masononly69", ""].includes(p)) {
+                    document.getElementById('auth-wrap').classList.add('hidden');
+                    document.getElementById('desktop').classList.remove('hidden');
+                    this.startClock();
+                    this.initEyes();
                 }
             },
 
-            initEyeTrack() {
+            startClock() {
+                setInterval(() => {
+                    document.getElementById('time').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                }, 1000);
+            },
+
+            initEyes() {
                 document.addEventListener('mousemove', (e) => {
                     const pupils = document.querySelectorAll('.pupil');
-                    const hand = document.getElementById('mark-hand');
-                    hand.style.left = (e.clientX + 30) + 'px';
-                    hand.style.top = (e.clientY + 30) + 'px';
-                    
-                    pupils.forEach(p => {
-                        const rect = p.parentElement.getBoundingClientRect();
-                        const x = (e.clientX - rect.left - 12.5) / 10;
-                        const y = (e.clientY - rect.top - 12.5) / 10;
-                        p.style.transform = `translate(${x}px, ${y}px)`;
+                    pupils.forEach(pupil => {
+                        const rect = pupil.parentElement.getBoundingClientRect();
+                        const x = (e.clientX - rect.left) / rect.width * 100;
+                        const y = (e.clientY - rect.top) / rect.height * 100;
+                        // Contain pupils within the socket boundaries (approx 20-80% range)
+                        const cx = Math.max(20, Math.min(80, x));
+                        const cy = Math.max(20, Math.min(80, y));
+                        pupil.style.left = cx + '%';
+                        pupil.style.top = cy + '%';
                     });
                 });
             },
 
-            initC4() {
-                const board = document.getElementById('c4-board');
-                board.innerHTML = '';
-                for(let r=0; r<6; r++) {
-                    for(let c=0; c<7; c++) {
-                        const cell = document.createElement('div');
-                        cell.className = 'c4-cell';
-                        cell.dataset.col = c;
-                        cell.onclick = () => this.playC4(c);
-                        board.appendChild(cell);
-                    }
-                }
+            open(id) {
+                document.getElementById(`win-${id}`).style.display = 'flex';
+                if(id === 'c4') this.drawC4();
+                if(id === 'ttt') this.drawTTT();
             },
 
-            playC4(col) {
-                if(this.isGameOver) return;
-                for(let r=5; r>=0; r--) {
-                    if(!this.c4Board[r][col]) {
-                        this.c4Board[r][col] = 'player';
-                        this.renderC4();
-                        if(this.checkWin(this.c4Board, 'player')) return this.endC4('ARCHITECT WINS.');
-                        document.getElementById('c4-status').innerText = "M.A.R.K: THINKING...";
-                        setTimeout(() => this.markC4Move(), 600);
-                        return;
-                    }
-                }
-            },
+            close(id) { document.getElementById(`win-${id}`).style.display = 'none'; },
 
-            markC4Move() {
-                // Heuristic: Pick center or first winning move
-                let bestCol = 3;
-                for(let c=0; c<7; c++) {
-                    // Simulating almost always knowing via center-weighted logic
-                    if(!this.c4Board[0][c]) { bestCol = c; break; }
-                }
-                
-                for(let r=5; r>=0; r--) {
-                    if(!this.c4Board[r][bestCol]) {
-                        this.c4Board[r][bestCol] = 'ai';
-                        this.renderC4();
-                        if(this.checkWin(this.c4Board, 'ai')) return this.endC4('I WIN.');
-                        document.getElementById('c4-status').innerText = "M.A.R.K: YOUR MOVE.";
-                        return;
-                    }
-                }
-            },
-
-            renderC4() {
-                const cells = document.querySelectorAll('.c4-cell');
-                this.c4Board.forEach((row, r) => {
+            /* --- CONNECT 4 LOGIC --- */
+            drawC4() {
+                const b = document.getElementById('c4-board');
+                b.innerHTML = '';
+                this.c4Data.forEach((row, r) => {
                     row.forEach((cell, c) => {
-                        const idx = r * 7 + c;
-                        cells[idx].className = 'c4-cell ' + (cell || '');
+                        const div = document.createElement('div');
+                        div.className = `c4-cell ${cell === 1 ? 'p1' : cell === 2 ? 'p2' : ''}`;
+                        div.onclick = () => this.dropC4(c);
+                        b.appendChild(div);
                     });
                 });
             },
-
-            checkWin(b, p) {
-                // Basic horizontal/vertical/diagonal check logic
-                return false; // (Simplified for code length - M.A.R.K usually "knows" wins)
-            },
-
-            endC4(msg) {
-                this.isGameOver = true;
-                document.getElementById('c4-status').innerText = `M.A.R.K: ${msg} REBOOTING...`;
-                setTimeout(() => {
-                    this.c4Board = Array(6).fill().map(() => Array(7).fill(null));
-                    this.isGameOver = false;
-                    this.renderC4();
-                    document.getElementById('c4-status').innerText = "M.A.R.K: READY?";
-                }, 2000);
-            },
-
-            talk(e) {
-                if(e.key === 'Enter') {
-                    const i = document.getElementById('ai-input');
-                    document.getElementById('ai-bubble').innerText = "M.A.R.K: Neural link active. " + i.value;
-                    i.value = "";
+            dropC4(c) {
+                for (let r = 5; r >= 0; r--) {
+                    if (this.c4Data[r][c] === 0) {
+                        this.c4Data[r][c] = 1;
+                        this.drawC4();
+                        setTimeout(() => this.aiC4(), 500);
+                        return;
+                    }
                 }
             },
+            aiC4() {
+                let c = Math.floor(Math.random() * 7);
+                for (let r = 5; r >= 0; r--) {
+                    if (this.c4Data[r][c] === 0) {
+                        this.c4Data[r][c] = 2;
+                        this.drawC4();
+                        return;
+                    }
+                }
+                this.aiC4(); // Retry if column full
+            },
 
-            open(win) { document.getElementById(`win-${win}`).style.display = 'flex'; document.getElementById(`win-${win}`).style.top = '15%'; document.getElementById(`win-${win}`).style.left = '25%'; },
-            close(win) { document.getElementById(`win-${win}`).style.display = 'none'; },
-            updateClock() { setInterval(() => { document.getElementById('time').innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000); },
-            startParticles() {
-                const c = document.getElementById('bg-canvas');
-                const ctx = c.getContext('2d');
-                c.width = window.innerWidth; c.height = window.innerHeight;
-                let p = [];
-                for(let i=0; i<100; i++) p.push({x:Math.random()*c.width, y:Math.random()*c.height, vx:(Math.random()-0.5), vy:(Math.random()-0.5)});
-                const render = () => {
-                    ctx.clearRect(0,0,c.width, c.height);
-                    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
-                    p.forEach(i => {
-                        i.x+=i.vx; i.y+=i.vy;
-                        if(i.x<0||i.x>c.width) i.vx*=-1; if(i.y<0||i.y>c.height) i.vy*=-1;
-                        ctx.beginPath(); ctx.arc(i.x, i.y, 2, 0, Math.PI*2); ctx.fill();
-                    });
-                    requestAnimationFrame(render);
-                };
-                render();
+            /* --- TIC TAC TOE LOGIC --- */
+            drawTTT() {
+                const b = document.getElementById('ttt-board');
+                b.innerHTML = '';
+                this.tttData.forEach((cell, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'ttt-cell';
+                    div.innerText = cell || '';
+                    div.onclick = () => {
+                        if(!this.tttData[i]) {
+                            this.tttData[i] = 'X';
+                            this.drawTTT();
+                            setTimeout(() => this.aiTTT(), 500);
+                        }
+                    };
+                    b.appendChild(div);
+                });
+            },
+            aiTTT() {
+                const empty = this.tttData.map((v, i) => v === null ? i : null).filter(v => v !== null);
+                if(empty.length > 0) {
+                    this.tttData[empty[Math.floor(Math.random() * empty.length)]] = 'O';
+                    this.drawTTT();
+                }
             }
         };
-
-        // Dragging Logic
-        document.querySelectorAll('.win-bar').forEach(bar => {
-            bar.onmousedown = (e) => {
-                let win = bar.parentElement;
-                let ox = e.clientX - win.offsetLeft, oy = e.clientY - win.offsetTop;
-                document.onmousemove = (e) => { win.style.left = (e.clientX - ox) + 'px'; win.style.top = (e.clientY - oy) + 'px'; };
-                document.onmouseup = () => document.onmousemove = null;
-            };
-        });
     </script>
 </body>
 </html>
