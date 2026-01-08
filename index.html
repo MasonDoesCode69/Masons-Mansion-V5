@@ -3,382 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mason’s Mansion | V16 Absolute Omega</title>
+    <title>Mason’s Mansion | V16.2026 Architect</title>
     <link href="fonts.googleapis.com" rel="stylesheet">
     <style>
         :root {
-            --bg: #020204;
-            --accent: #ffcc33;
-            --glow: rgba(255, 204, 51, 0.3);
-            --glass: rgba(8, 8, 12, 0.96);
-            --border: rgba(255, 255, 255, 0.07);
-            --text: #ffffff;
-            --font-main: 'Orbitron', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --bg: #010103; --accent: #ffcc33; --glow: rgba(255, 204, 51, 0.4);
+            --glass: rgba(15, 15, 20, 0.85); --border: rgba(255, 255, 255, 0.1);
+            --font-main: 'Orbitron', sans-serif; --font-mono: 'JetBrains Mono', monospace;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-main); cursor: crosshair; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: #fff; font-family: var(--font-main); cursor: crosshair; }
+        canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-        #bg-canvas { position: fixed; inset: 0; z-index: 0; }
+        /* --- AUTH SCREEN --- */
+        #auth-wrap { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); transition: 1.2s cubic-bezier(0.65, 0, 0.35, 1); }
+        .login-box { width: 550px; padding: 70px; background: var(--glass); backdrop-filter: blur(50px); border: 1px solid var(--border); text-align: center; border-radius: 30px; box-shadow: 0 0 100px rgba(0,0,0,0.9); }
+        .login-box h1 { font-family: 'Syncopate'; letter-spacing: 15px; font-size: 22px; color: var(--accent); margin-bottom: 40px; text-shadow: 0 0 20px var(--glow); }
+        .login-box input { width: 100%; background: #000; border: 1px solid var(--border); padding: 25px; color: var(--accent); text-align: center; margin-bottom: 25px; border-radius: 15px; font-family: var(--font-mono); font-size: 20px; letter-spacing: 12px; transition: 0.3s; }
+        .login-box input:focus { border-color: var(--accent); box-shadow: 0 0 20px var(--glow); }
+        .login-btn { width: 100%; padding: 22px; background: var(--accent); color: #000; font-weight: 900; border: none; cursor: pointer; letter-spacing: 10px; border-radius: 15px; font-family: var(--font-main); transition: 0.3s; }
+        .login-btn:hover { background: #fff; transform: scale(1.02); }
 
-        /* --- CHRONOS CLOCK --- */
-        #chronos {
-            position: fixed; top: 30px; right: 40px; text-align: right; z-index: 1000;
-            pointer-events: none; transition: 0.5s;
-        }
-        #time-digit { font-size: 48px; font-weight: 900; color: var(--accent); letter-spacing: 6px; text-shadow: 0 0 20px var(--glow); }
-        #date-digit { font-size: 11px; opacity: 0.5; letter-spacing: 4px; text-transform: uppercase; font-family: var(--font-mono); }
+        /* --- M.A.V.I.S FACIAL ENGINE --- */
+        #ai-interface { position: fixed; top: 150px; left: 50px; width: 420px; z-index: 2000; }
+        #mavis-face { width: 110px; height: 110px; border: 3px solid var(--accent); border-radius: 50%; margin-bottom: 30px; position: relative; box-shadow: 0 0 50px var(--glow); animation: float 4s infinite ease-in-out; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .eye-row { display: flex; justify-content: space-around; width: 50px; position: absolute; top: 35px; left: 30px; transition: 0.3s; }
+        .eye { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 15px var(--accent); transition: 0.3s; }
+        #mouth { width: 40px; height: 15px; border-bottom: 4px solid var(--accent); border-radius: 0 0 30px 30px; position: absolute; bottom: 25px; left: 35px; transition: 0.3s; }
+        
+        /* Emote States */
+        .emote-angry .eye { height: 4px; transform: rotate(15deg); background: #ff1f1f; box-shadow: 0 0 15px #ff1f1f; }
+        .emote-angry #mavis-face { border-color: #ff1f1f; box-shadow: 0 0 50px rgba(255,31,31,0.5); }
+        .emote-thinking .eye { width: 15px; height: 2px; }
+        .emote-happy #mouth { border-radius: 0 0 50px 50px; height: 25px; }
+        .emote-vip .eye { background: #00f2ff; box-shadow: 0 0 20px #00f2ff; }
+        .emote-vip #mavis-face { border-color: #00f2ff; }
 
-        /* --- AUTHENTICATION --- */
-        #auth-overlay {
-            position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center;
-            background: #000; transition: 1.5s cubic-bezier(0.8, 0, 0.2, 1);
-        }
-        .login-card {
-            background: var(--glass); padding: 60px; border-radius: 5px; border-left: 5px solid var(--accent);
-            width: 450px; box-shadow: 0 0 100px rgba(0,0,0,1); text-align: center;
-        }
-        .login-card h1 { font-size: 34px; letter-spacing: 15px; margin-bottom: 30px; color: var(--accent); }
-        .login-card input {
-            width: 100%; background: #080808; border: 1px solid var(--border); padding: 18px; 
-            color: #fff; margin-bottom: 15px; text-align: center; font-family: var(--font-mono); font-size: 14px;
-        }
-        .login-card button {
-            width: 100%; padding: 18px; background: var(--accent); color: #000; font-weight: 900;
-            border: none; cursor: pointer; transition: 0.3s; letter-spacing: 5px;
-        }
-        .login-card button:hover { letter-spacing: 10px; background: #fff; box-shadow: 0 0 30px #fff; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
+        #ai-bubble { background: var(--glass); border: 1px solid var(--border); padding: 30px; border-radius: 20px; font-size: 13px; font-family: var(--font-mono); color: #efefef; margin-bottom: 20px; border-left: 6px solid var(--accent); line-height: 1.8; backdrop-filter: blur(30px); }
+        #ai-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 20px; color: var(--accent); font-family: var(--font-mono); border-radius: 15px; font-size: 14px; }
 
-        /* --- SIDEBAR SYSTEM --- */
-        #sidebar {
-            position: fixed; left: -320px; top: 0; bottom: 0; width: 320px;
-            background: var(--glass); border-right: 1px solid var(--border); padding: 40px 25px;
-            z-index: 2000; transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1); backdrop-filter: blur(25px);
-        }
-        #sidebar.open { left: 0; box-shadow: 30px 0 100px rgba(0,0,0,0.8); }
-        #sidebar-tab {
-            position: absolute; right: -40px; top: 50%; height: 180px; width: 40px;
-            background: var(--accent); color: #000; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-weight: 900; writing-mode: vertical-rl; letter-spacing: 5px; font-size: 12px;
-        }
+        /* --- CHRONOS HUD --- */
+        #hud { position: fixed; top: 50px; right: 50px; text-align: right; z-index: 1000; pointer-events: none; }
+        #time { font-size: 84px; font-weight: 900; color: var(--accent); letter-spacing: 15px; line-height: 1; text-shadow: 0 0 40px var(--glow); }
+        #date { font-size: 16px; opacity: 0.6; letter-spacing: 6px; font-family: var(--font-mono); margin-top: 20px; }
 
-        .label { font-size: 9px; color: var(--accent); letter-spacing: 4px; margin: 25px 0 10px; opacity: 0.6; text-transform: uppercase; }
-        .ctrl-btn {
-            width: 100%; padding: 12px; margin: 4px 0; background: rgba(255,255,255,0.03); 
-            border: 1px solid var(--border); color: #fff; cursor: pointer; text-align: left; 
-            font-size: 10px; font-family: var(--font-mono); transition: 0.2s;
-        }
-        .ctrl-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--accent); padding-left: 20px; }
-        .ctrl-btn.active { background: var(--accent); color: #000; font-weight: 900; border-color: #fff; }
-
-        /* --- DESKTOP WINDOWS --- */
-        #desktop { position: relative; width: 100vw; height: 100vh; z-index: 10; display: none; }
-        .window {
-            position: absolute; background: var(--glass); border: 1px solid var(--border);
-            width: 950px; height: 600px; display: none; flex-direction: column;
-            box-shadow: 0 40px 120px rgba(0,0,0,0.9); z-index: 500; border-radius: 4px;
-        }
-        .win-head {
-            padding: 15px 25px; background: rgba(255,255,255,0.04); display: flex; 
-            justify-content: space-between; cursor: move; border-bottom: 1px solid var(--border);
-            font-size: 11px; letter-spacing: 3px; font-weight: 900; color: var(--accent);
-        }
-        .win-body { flex: 1; overflow: hidden; background: #000; position: relative; }
-
-        /* --- DASHBOARD GRIDS --- */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 20px; }
-        .card {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 20px;
-            text-align: center; cursor: pointer; transition: 0.3s;
-        }
-        .card:hover { border-color: var(--accent); transform: translateY(-5px); background: rgba(255,255,255,0.05); }
-        .card i { font-size: 24px; display: block; margin-bottom: 10px; }
+        /* --- WINDOWS --- */
+        .window { position: absolute; background: var(--glass); border: 1px solid var(--border); display: none; flex-direction: column; z-index: 3000; border-radius: 25px; overflow: hidden; backdrop-filter: blur(60px); box-shadow: 0 50px 100px rgba(0,0,0,0.8); transition: opacity 0.3s; }
+        .win-bar { padding: 25px 35px; background: rgba(255,255,255,0.05); cursor: move; display: flex; justify-content: space-between; font-size: 12px; letter-spacing: 5px; font-weight: 900; border-bottom: 1px solid var(--border); }
+        .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 35px; }
+        .theme-btn { padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: #fff; cursor: pointer; font-family: var(--font-mono); font-size: 11px; transition: 0.3s; border-radius: 12px; }
+        .theme-btn:hover { border-color: var(--accent); background: rgba(255,255,255,0.1); transform: translateY(-5px); }
 
         /* --- TASKBAR --- */
-        #taskbar {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: var(--glass); border: 1px solid var(--border); padding: 12px 35px;
-            border-radius: 100px; display: flex; gap: 25px; z-index: 1000; backdrop-filter: blur(15px);
-        }
-        .t-icon {
-            width: 55px; height: 55px; display: flex; align-items: center; justify-content: center;
-            font-size: 28px; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-radius: 50%; border: 1px solid transparent;
-        }
-        .t-icon:hover { transform: translateY(-20px) scale(1.2); border-color: var(--accent); box-shadow: 0 10px 30px var(--glow); }
-
-        iframe { width: 100%; height: 100%; border: none; }
+        #taskbar { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: var(--glass); border: 1px solid var(--border); padding: 15px 60px; border-radius: 100px; display: flex; gap: 50px; z-index: 5000; backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .icon { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-radius: 50%; position: relative; }
+        .icon:hover { transform: translateY(-30px) scale(1.2); background: var(--accent); color: #000; box-shadow: 0 15px 40px var(--glow); }
+        .icon:hover::after { content: attr(title); position: absolute; top: -40px; font-size: 10px; font-family: var(--font-mono); color: var(--accent); letter-spacing: 2px; background: #000; padding: 5px 10px; border-radius: 5px; }
+        
+        iframe { width: 100%; height: 100%; border: none; background: #000; }
         .hidden { display: none !important; }
-        .vip-txt { color: #00f2ff; text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
-        .owner-txt { color: #ff3333; text-shadow: 0 0 10px rgba(255, 51, 51, 0.5); }
+        .vip-text { color: #00f2ff; text-shadow: 0 0 10px rgba(0,242,255,0.5); }
+        .owner-text { color: var(--accent); font-weight: 900; text-shadow: 0 0 15px var(--glow); }
     </style>
 </head>
 <body>
 
-    <canvas id="bg-canvas"></canvas>
+    <canvas id="canvas"></canvas>
 
-    <div id="chronos">
-        <div id="time-digit">00:00:00</div>
-        <div id="date-digit">INITIALIZING_CHRONOS</div>
-    </div>
-
-    <div id="auth-overlay">
-        <div class="login-card">
-            <h1>MASON V16</h1>
-            <input type="password" id="sys-pass" placeholder="ENTER ACCESS KEY">
-            <button onclick="Mansion.init()">LOGIN</button>
-            <p style="font-size: 8px; margin-top: 20px; opacity: 0.3; letter-spacing: 2px;">SECURED BY HONEY_ARCHITECTURE_2026</p>
+    <div id="auth-wrap">
+        <div class="login-box">
+            <h1 id="auth-title">V16 ARCHITECT</h1>
+            <p style="font-family:var(--font-mono); font-size:10px; opacity:0.5; margin-bottom:30px; letter-spacing:5px;">SECURE_PROTOCOL_JAN_2026</p>
+            <input type="password" id="sys-pass" placeholder="KEY_INPUT">
+            <button class="login-btn" onclick="Engine.init()">BOOT SYSTEM</button>
         </div>
     </div>
 
-    <div id="desktop">
-        <div id="sidebar">
-            <div id="sidebar-tab" onclick="document.getElementById('sidebar').classList.toggle('open')">TERMINAL</div>
-            
-            <div class="label">Physics Engine</div>
-            <button class="ctrl-btn active" id="m-float" onclick="Mansion.toggle('float')">Galactic Drift [ON]</button>
-            <button class="ctrl-btn" id="m-rgb" onclick="Mansion.toggle('rgb')">Neural Pulse [OFF]</button>
-            <button class="ctrl-btn" id="m-magnet" onclick="Mansion.toggle('magnet')">Gravity Well [OFF]</button>
-            
-            <div class="label">Geometry Mod</div>
-            <button class="ctrl-btn active" id="s-shard" onclick="Mansion.setShape('shard')">Crystal Shard</button>
-            <button class="ctrl-btn" id="s-poly" onclick="Mansion.setShape('poly')">Hexa-Polygon</button>
-            <button class="ctrl-btn" id="s-star" onclick="Mansion.setShape('star')">Star Particle</button>
-            <button class="ctrl-btn" id="s-meme" onclick="Mansion.setShape('meme')">Meme Entity</button>
-
-            <div class="label">Quick Execution</div>
-            <button class="ctrl-btn" onclick="Mansion.swarm(100)">Inject 100 Entities</button>
-            <button class="ctrl-btn" onclick="Mansion.clear()" style="color: #ff5f56;">Purge All Particles</button>
+    <div id="desktop" class="hidden">
+        <div id="hud">
+            <div id="time">00:00:00</div>
+            <div id="date">JANUARY 08, 2026</div>
         </div>
 
-        <!-- Windows -->
-        <div id="win-games" class="window">
-            <div class="win-head"><span>REPOSITORY // GAME_CENTER</span><span style="cursor:pointer" onclick="Mansion.close('games')">×</span></div>
-            <div class="win-body" id="game-container"></div>
+        <div id="ai-interface">
+            <div id="mavis-face">
+                <div class="eye-row"><div class="eye"></div><div class="eye"></div></div>
+                <div id="mouth"></div>
+            </div>
+            <div id="ai-bubble">M.A.V.I.S: System online. Awaiting architect authorization...</div>
+            <input type="text" id="ai-input" placeholder="TALK TO M.A.V.I.S..." onkeypress="Engine.talk(event)">
         </div>
 
-        <div id="win-themes" class="window" style="width: 600px; height: 500px;">
-            <div class="win-head"><span>THEME // ENGINE</span><span style="cursor:pointer" onclick="Mansion.close('themes')">×</span></div>
-            <div class="win-body"><div class="grid" id="theme-grid"></div></div>
+        <div id="win-themes" class="window" style="width:450px; height:550px;">
+            <div class="win-bar"><span>🎨 THEME_VAULT</span><span onclick="Engine.close('themes')" style="cursor:pointer">×</span></div>
+            <div class="theme-grid" id="theme-grid"></div>
         </div>
 
-        <div id="win-owner" class="window" style="width: 800px; height: 550px;">
-            <div class="win-head"><span>ROOT // ACCESS</span><span style="cursor:pointer" onclick="Mansion.close('owner')">×</span></div>
-            <div class="win-body"><div class="grid" id="owner-cmd-grid"></div></div>
+        <div id="win-games" class="window" style="width:1200px; height:750px;">
+            <div class="win-bar"><span>⚔️ GAME_CENTER</span><span onclick="Engine.close('games')" style="cursor:pointer">×</span></div>
+            <div id="game-frame" style="flex:1"></div>
+        </div>
+
+        <div id="win-owner" class="window" style="width:500px; height:400px;">
+            <div class="win-bar"><span>👑 ROOT_CONTROL_V16</span><span onclick="Engine.close('owner')" style="cursor:pointer">×</span></div>
+            <div style="padding:50px; text-align:center; font-family: var(--font-mono); font-size: 13px;">
+                <h2 class="owner-text">ARCHITECT MASON</h2>
+                <div style="margin-top:30px; padding:20px; border:1px solid var(--border); border-radius:10px; background:rgba(255,255,255,0.02);">
+                    <p>Status: <span style="color:#50c878">ROOTED</span></p>
+                    <p style="margin-top:10px;">Encryption: <span style="color:#50c878">DECRYPTED</span></p>
+                    <p style="margin-top:10px;">Mansion Shielding: <span style="color:#50c878">100%</span></p>
+                </div>
+            </div>
         </div>
 
         <div id="taskbar">
-            <div class="t-icon" title="Games" onclick="Mansion.open('games')">⚔️</div>
-            <div class="t-icon" title="Themes" onclick="Mansion.open('themes')">🌌</div>
-            <div class="t-icon hidden" id="vip-icon" title="VIP Dashboard" onclick="Mansion.open('vip')">💎</div>
-            <div class="t-icon hidden" id="owner-icon" title="Owner Root" onclick="Mansion.open('owner')">👑</div>
+            <div class="icon" title="Themes" onclick="Engine.open('themes')">🎨</div>
+            <div class="icon" title="Gladihoppers" onclick="Engine.open('games', 'usernamegth.github.io')">⚔️</div>
+            <div class="icon" title="Slope" onclick="Engine.open('games', '96f.github.io')">⛷️</div>
+            <div class="icon" title="Portal Hub" onclick="Engine.open('games', 'unblocked-games-66.com')">🌐</div>
+            <div id="owner-icon" class="icon hidden" title="Owner Access" onclick="Engine.open('owner')">👑</div>
         </div>
     </div>
 
     <script>
-        const Mansion = {
-            rank: 'guest', entities: [], canvas: null, ctx: null, mouse: {x: -1000, y: -1000},
-            mods: { float: true, rgb: false, magnet: false, shape: 'shard' },
+        /**
+         * M.A.V.I.S. ARCHITECT CORE v16.2026
+         * Refactored for Personality, Emotes, and Tiered Security
+         */
+        const MAVIS_BRAIN = {
+            nerdEmoji: "🤓",
+            tier: "Normal",
+            restricted: ["fuck", "shit", "bitch", "ass", "hell", "damn", "crap"],
             
+            // Emote Logic
+            setEmote(emote) {
+                const face = document.getElementById('mavis-face');
+                face.className = ''; // Reset
+                if (emote) face.classList.add(`emote-${emote}`);
+            },
+
+            // Personality Modules
+            responses: {
+                standard: [
+                    "Everything is running smoothly, sir.",
+                    "I have optimized the background processes for your session.",
+                    "Standing by for further architectural directives.",
+                    "The Mansion is secure. No intrusions detected."
+                ],
+                vip: [
+                    "VIP protocols active. You're looking sharp today.",
+                    "I've unlocked the high-bandwidth game streams for you.",
+                    "The inner sanctum is prepared for your presence.",
+                    "Shall I recalibrate the aesthetic vault?"
+                ],
+                owner: [
+                    "Mason, the Mansion is yours. All root permissions are live.",
+                    "My core belongs to the Architect. What is our next move?",
+                    "Total control achieved. Bypassing all safety limiters.",
+                    "I live to serve the creator of the V16 kernel."
+                ]
+            },
+
+            process(input) {
+                const query = input.toLowerCase();
+                this.setEmote('thinking');
+
+                // 1. Security & Profanity
+                if (this.restricted.some(word => query.includes(word))) {
+                    this.setEmote('angry');
+                    return `Architect, such vernacular violates protocol. We are in a professional environment. ${this.nerdEmoji}`;
+                }
+
+                // 2. Logic Triggers
+                if (query.includes("who are you")) {
+                    this.setEmote('happy');
+                    return `I am M.A.V.I.S. (Mason's Advanced Virtual Intelligence System). I am the sentinel of this digital mansion. Current Clearance: ${this.tier}.`;
+                }
+
+                if (query.includes("status")) {
+                    this.setEmote(null);
+                    return `System Integrity: 100%. Core Temp: Stable. Current User: ${this.tier}. All sub-systems operational.`;
+                }
+
+                if (query.includes("mason")) {
+                    this.setEmote('vip');
+                    return "Mason Porrazzo is the Prime Architect. Without his code, I am but dust in the machine.";
+                }
+
+                // 3. Tiered Default Response
+                setTimeout(() => this.setEmote(this.tier === 'OWNER' ? 'vip' : null), 1000);
+                const pool = this.responses[this.tier.toLowerCase()];
+                return pool[Math.floor(Math.random() * pool.length)];
+            }
+        };
+
+        const Engine = {
             themes: [
-                { n: 'Void Gold', a: '#ffcc33', b: '#020204' },
-                { n: 'Cyber Neon', a: '#00f2ff', b: '#050a15' },
-                { n: 'Blood Moon', a: '#ff1f1f', b: '#0a0000' },
-                { n: 'Emerald City', a: '#50c878', b: '#010802' },
-                { n: 'Matrix', a: '#00ff41', b: '#000000' },
-                { n: 'Royal Purple', a: '#bc13fe', b: '#08000f' },
-                { n: 'Solar Flare', a: '#ff4e00', b: '#0a0200' },
-                { n: 'Oceanic', a: '#0077be', b: '#00050a' },
-                { n: 'Ghost', a: '#ffffff', b: '#0a0a0a' },
-                { n: 'Toxic', a: '#adff2f', b: '#050a00' }
-            ],
-
-            vipThemes: [
-                { n: 'Diamond', a: '#b9f2ff', b: '#0d1218' },
-                { n: 'Ruby VIP', a: '#e0115f', b: '#120101' },
-                { n: 'Platinum', a: '#e5e4e2', b: '#000000' },
-                { n: 'Golden Era', a: '#ffd700', b: '#0a0a00' },
-                { n: 'Black Hole', a: '#444444', b: '#000000' },
-                { n: 'Pink Nebula', a: '#ff007f', b: '#0a0006' },
-                { n: 'Deep Sea', a: '#191970', b: '#000005' },
-                { n: 'Frozen', a: '#afeeee', b: '#00080a' },
-                { n: 'Copper', a: '#b87333', b: '#050200' },
-                { n: 'Obsidian', a: '#1a1a1a', b: '#000000' }
-            ],
-
-            games: [
-                { n: 'Gladihoppers', u: 'usernamegth.github.io' },
-                { n: 'Slope', u: '96f.github.io' },
-                { n: 'Minecraft', u: 'classic.minecraft.net' },
-                { n: 'Retro Bowl', u: 'game316009.konggames.com' }
+                {n:'Honey Gold', a:'#ffcc33', b:'#010103'}, {n:'Cyber Neon', a:'#00f2ff', b:'#050a15'},
+                {n:'Vampire', a:'#ff1f1f', b:'#0a0000'}, {n:'Emerald', a:'#50c878', b:'#000f05'},
+                {n:'Obsidian', a:'#ffffff', b:'#000000'}, {n:'Amethyst', a:'#bc13fe', b:'#08000f'}
             ],
 
             init() {
-                const p = document.getElementById('sys-pass').value;
-                if(p === "masononly69") { this.rank = "OWNER"; this.unlockUI(['owner-icon', 'vip-icon']); }
-                else if(p === "vip420") { this.rank = "VIP"; this.unlockUI(['vip-icon']); }
-                else if(p === "honey") { this.rank = "USER"; }
-                else { alert("ACCESS_DENIED"); return; }
+                const pass = document.getElementById('sys-pass').value;
+                const bubble = document.getElementById('ai-bubble');
 
-                document.getElementById('auth-overlay').style.transform = 'translateY(-100%)';
-                setTimeout(() => {
-                    document.getElementById('auth-overlay').style.display = 'none';
-                    document.getElementById('desktop').style.display = 'block';
-                    this.bootEngine();
-                }, 1000);
-            },
-
-            unlockUI(ids) { ids.forEach(id => document.getElementById(id).classList.remove('hidden')); },
-
-            bootEngine() {
-                this.canvas = document.getElementById('bg-canvas');
-                this.ctx = this.canvas.getContext('2d');
-                window.onresize = () => { this.canvas.width = innerWidth; this.canvas.height = innerHeight; };
-                window.onmousemove = (e) => { this.mouse.x = e.clientX; this.mouse.y = e.clientY; };
-                window.onresize();
-                this.startClock();
-                this.loadGrids();
-                for(let i=0; i<40; i++) this.spawn();
-                this.render();
-            },
-
-            startClock() {
-                setInterval(() => {
-                    const d = new Date();
-                    document.getElementById('time-digit').innerText = d.toLocaleTimeString('en-GB', {hour12: false});
-                    document.getElementById('date-digit').innerText = d.toLocaleDateString(undefined, {weekday:'long', month:'long', day:'numeric', year:'numeric'});
-                }, 1000);
-            },
-
-            loadGrids() {
-                const tg = document.getElementById('theme-grid');
-                this.themes.forEach((t, i) => {
-                    tg.innerHTML += `<div class="card" onclick="Mansion.applyTheme(${i}, false)">${t.n}</div>`;
-                });
-                if(this.rank === 'VIP' || this.rank === 'OWNER') {
-                    this.vipThemes.forEach((t, i) => {
-                        tg.innerHTML += `<div class="card vip-txt" onclick="Mansion.applyTheme(${i}, true)">${t.n}</div>`;
-                    });
-                }
-                
-                const og = document.getElementById('owner-cmd-grid');
-                if(this.rank === 'OWNER') {
-                    for(let i=1; i<=20; i++) {
-                        og.innerHTML += `<div class="card owner-txt" onclick="Mansion.swarm(${i*50})">COMMAND: INJECT_${i*50}</div>`;
+                if (pass === "v16" || pass === "vip420" || pass === "masononly69" || pass === "") {
+                    // Logic for Tier Assignment
+                    if (pass === "vip420") {
+                        MAVIS_BRAIN.tier = "VIP";
+                        MAVIS_BRAIN.setEmote('vip');
+                        bubble.innerHTML = "M.A.V.I.S: <span class='vip-text'>VIP ACCESS GRANTED.</span> Protocols updated.";
+                    } else if (pass === "masononly69") {
+                        MAVIS_BRAIN.tier = "OWNER";
+                        document.getElementById('owner-icon').classList.remove('hidden');
+                        bubble.innerHTML = "M.A.V.I.S: <span class='owner-text'>ROOT ACCESS CONFIRMED.</span> Welcome home, Mason.";
+                    } else {
+                        bubble.innerText = "M.A.V.I.S: Standard clearance established. Welcome to the Mansion.";
                     }
+
+                    document.getElementById('auth-wrap').style.opacity = '0';
+                    document.getElementById('auth-wrap').style.transform = 'scale(1.5)';
+                    setTimeout(() => {
+                        document.getElementById('auth-wrap').classList.add('hidden');
+                        document.getElementById('desktop').classList.remove('hidden');
+                        this.startCanvas();
+                        this.updateClock();
+                        this.loadThemes();
+                    }, 1200);
+                } else {
+                    alert("ACCESS DENIED: KEY MISMATCH");
                 }
             },
 
-            spawn() {
-                this.entities.push({
-                    x: Math.random() * innerWidth, y: Math.random() * innerHeight,
-                    vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3,
-                    sz: 25 + Math.random() * 35, rot: Math.random() * 360,
-                    hue: Math.random() * 360, sides: 3 + Math.floor(Math.random() * 5)
-                });
-            },
+            talk(e) {
+                if (e.key === 'Enter') {
+                    const input = document.getElementById('ai-input');
+                    const bubble = document.getElementById('ai-bubble');
+                    const mouth = document.getElementById('mouth');
+                    const val = input.value.trim();
+                    if (!val) return;
 
-            toggle(m) {
-                this.mods[m] = !this.mods[m];
-                const b = document.getElementById(`m-${m}`);
-                b.classList.toggle('active');
-                b.innerText = b.innerText.split('[')[0] + (this.mods[m] ? '[ON]' : '[OFF]');
-            },
-
-            setShape(s) {
-                this.mods.shape = s;
-                document.querySelectorAll('.ctrl-btn').forEach(btn => btn.classList.remove('active'));
-                document.getElementById(`s-${s}`).classList.add('active');
-            },
-
-            open(id) {
-                const win = document.getElementById('win-' + id);
-                win.style.display = 'flex';
-                win.style.top = '100px'; win.style.left = '200px';
-                this.drag(win);
-                if(id === 'games') {
-                    const gc = document.getElementById('game-container');
-                    gc.innerHTML = `<div class="grid"></div>`;
-                    this.games.forEach(g => {
-                        gc.firstChild.innerHTML += `<div class="card" onclick="Mansion.launchGame('${g.u}')">${g.n}</div>`;
-                    });
+                    mouth.style.height = "25px"; mouth.style.borderRadius = "50%";
+                    
+                    setTimeout(() => {
+                        bubble.innerHTML = `M.A.V.I.S: ${MAVIS_BRAIN.process(val)}`;
+                        mouth.style.height = "15px"; mouth.style.borderRadius = "0 0 30px 30px";
+                        input.value = "";
+                    }, 600);
                 }
             },
 
-            launchGame(url) {
-                document.getElementById('game-container').innerHTML = `<iframe src="${url}"></iframe>`;
+            open(win, url = null) {
+                const target = document.getElementById(`win-${win}`);
+                target.style.display = 'flex';
+                target.style.top = '10%'; target.style.left = '20%';
+                if (url) document.getElementById('game-frame').innerHTML = `<iframe src="https://${url}"></iframe>`;
             },
 
-            close(id) { document.getElementById('win-' + id).style.display = 'none'; },
+            close(win) { document.getElementById(`win-${win}`).style.display = 'none'; },
 
-            applyTheme(i, isVip) {
-                const t = isVip ? this.vipThemes[i] : this.themes[i];
-                document.documentElement.style.setProperty('--accent', t.a);
-                document.documentElement.style.setProperty('--bg', t.b);
-                document.documentElement.style.setProperty('--glow', t.a + '44');
-            },
-
-            swarm(n) { for(let i=0; i<n; i++) this.spawn(); },
-            clear() { this.entities = []; },
-
-            drag(el) {
-                let p1=0, p2=0, p3=0, p4=0;
-                el.querySelector('.win-head').onmousedown = (e) => {
-                    p3=e.clientX; p4=e.clientY;
-                    document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
-                    document.onmousemove = (e) => {
-                        p1=p3-e.clientX; p2=p4-e.clientY; p3=e.clientX; p4=e.clientY;
-                        el.style.top = (el.offsetTop-p2)+"px"; el.style.left = (el.offsetLeft-p1)+"px";
+            loadThemes() {
+                const grid = document.getElementById('theme-grid');
+                this.themes.forEach(t => {
+                    let btn = document.createElement('div');
+                    btn.className = 'theme-btn'; btn.innerHTML = t.n;
+                    btn.onclick = () => {
+                        document.documentElement.style.setProperty('--accent', t.a);
+                        document.documentElement.style.setProperty('--bg', t.b);
+                        document.documentElement.style.setProperty('--glow', t.a + '66');
                     };
-                };
+                    grid.appendChild(btn);
+                });
             },
 
-            render() {
-                this.ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg');
-                this.ctx.fillRect(0,0,innerWidth,innerHeight);
-                const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+            updateClock() {
+                setInterval(() => {
+                    const now = new Date();
+                    document.getElementById('time').innerText = now.toLocaleTimeString('en-US', { hour12: false });
+                }, 1000);
+            },
 
-                this.entities.forEach(e => {
-                    if(this.mods.float) { e.x += e.vx; e.y += e.vy; e.rot += 0.5; }
-                    if(this.mods.magnet) {
-                        const dx = this.mouse.x - e.x, dy = this.mouse.y - e.y;
-                        const dist = Math.sqrt(dx*dx + dy*dy);
-                        if(dist < 300) { e.x += dx * 0.02; e.y += dy * 0.02; }
-                    }
-
-                    if(e.x < 0 || e.x > innerWidth) e.vx *= -1;
-                    if(e.y < 0 || e.y > innerHeight) e.vy *= -1;
-
-                    this.ctx.save();
-                    this.ctx.translate(e.x, e.y);
-                    this.ctx.rotate(e.rot * Math.PI / 180);
-                    this.ctx.strokeStyle = this.mods.rgb ? `hsl(${e.hue}, 100%, 50%)` : accent;
-                    this.ctx.lineWidth = 1.5;
-                    this.ctx.beginPath();
-
-                    if(this.mods.shape === 'shard') {
-                        this.ctx.moveTo(0, -e.sz); this.ctx.lineTo(e.sz/3, 0); this.ctx.lineTo(0, e.sz); this.ctx.lineTo(-e.sz/3, 0);
-                    } else if(this.mods.shape === 'poly') {
-                        for(let i=0; i<6; i++) this.ctx.lineTo(e.sz * Math.cos(i*2*Math.PI/6), e.sz * Math.sin(i*2*Math.PI/6));
-                    } else if(this.mods.shape === 'star') {
-                        for(let i=0; i<10; i++) {
-                            const r = (i%2===0) ? e.sz : e.sz/2;
-                            this.ctx.lineTo(r * Math.cos(i*Math.PI/5), r * Math.sin(i*Math.PI/5));
-                        }
-                    } else if(this.mods.shape === 'meme') {
-                        this.ctx.font = `${e.sz}px Arial`;
-                        this.ctx.fillText("🤡", -e.sz/2, e.sz/2);
-                    }
-
-                    this.ctx.closePath();
-                    this.ctx.stroke();
-                    this.ctx.restore();
-                    if(this.mods.rgb) e.hue++;
+            startCanvas() {
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+                let particles = [];
+                for (let i = 0; i < 120; i++) particles.push({
+                    x: Math.random() * canvas.width, 
+                    y: Math.random() * canvas.height, 
+                    s: Math.random() * 3, 
+                    vx: (Math.random() - 0.5) * 0.4, 
+                    vy: (Math.random() - 0.5) * 0.4
                 });
-                requestAnimationFrame(() => this.render());
+
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+                    particles.forEach(p => {
+                        p.x += p.vx; p.y += p.vy;
+                        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2); ctx.fill();
+                    });
+                    requestAnimationFrame(draw);
+                }
+                draw();
             }
         };
+
+        // Window Move Logic
+        document.querySelectorAll('.win-bar').forEach(bar => {
+            bar.onmousedown = (e) => {
+                let win = bar.parentElement;
+                let ox = e.clientX - win.offsetLeft;
+                let oy = e.clientY - win.offsetTop;
+                document.onmousemove = (e) => {
+                    win.style.left = (e.clientX - ox) + 'px';
+                    win.style.top = (e.clientY - oy) + 'px';
+                };
+                document.onmouseup = () => document.onmousemove = null;
+            };
+        });
     </script>
 </body>
 </html>
+``` Link to [Mason Porrazzo's Design Philosophy](fonts.google.com) for typography inspiration.
