@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg: #010103; --accent: #ffcc33; --glow: rgba(255, 204, 51, 0.4);
-            --glass: rgba(15, 15, 20, 0.9); --border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(15, 15, 20, 0.85); --border: rgba(255, 255, 255, 0.1);
             --font-main: 'Orbitron', sans-serif; --font-mono: 'JetBrains Mono', monospace;
         }
 
@@ -16,170 +16,129 @@
         body, html { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: #fff; font-family: var(--font-main); cursor: crosshair; }
         canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-        /* --- AUTH --- */
-        #auth-wrap { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #000; transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .login-box { width: 500px; padding: 60px; background: var(--glass); backdrop-filter: blur(50px); border: 1px solid var(--border); text-align: center; border-radius: 20px; box-shadow: 0 0 100px #000; }
-        .login-box h1 { font-family: 'Syncopate'; letter-spacing: 12px; font-size: 22px; color: var(--accent); margin-bottom: 40px; }
-        .login-box input { width: 100%; background: #050505; border: 1px solid var(--border); padding: 20px; color: var(--accent); text-align: center; margin-bottom: 25px; border-radius: 10px; font-family: var(--font-mono); letter-spacing: 5px; font-size: 18px; }
-        .login-btn { width: 100%; padding: 20px; background: var(--accent); color: #000; font-weight: 900; border: none; cursor: pointer; letter-spacing: 8px; border-radius: 10px; transition: 0.3s; }
+        /* --- M.A.R.K HAND (SVG EMBED) --- */
+        #mark-hand {
+            position: fixed; width: 40px; height: 40px; z-index: 10000; pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28); filter: drop-shadow(0 0 10px var(--accent));
+        }
+
+        /* --- AUTH SCREEN --- */
+        #auth-wrap { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); transition: 1.2s; }
+        .login-box { width: 500px; padding: 60px; background: var(--glass); backdrop-filter: blur(40px); border: 1px solid var(--border); text-align: center; border-radius: 20px; box-shadow: 0 0 80px rgba(0,0,0,0.8); }
+        .login-box h1 { font-family: 'Syncopate'; letter-spacing: 15px; font-size: 20px; color: var(--accent); margin-bottom: 40px; }
+        .login-box input { width: 100%; background: #000; border: 1px solid var(--border); padding: 20px; color: var(--accent); text-align: center; margin-bottom: 25px; border-radius: 10px; font-family: var(--font-mono); font-size: 18px; letter-spacing: 10px; }
+        .login-btn { width: 100%; padding: 20px; background: var(--accent); color: #000; font-weight: 900; border: none; cursor: pointer; letter-spacing: 8px; border-radius: 10px; font-family: var(--font-main); transition: 0.3s; }
 
         /* --- M.A.R.K UI --- */
-        #ai-interface { position: fixed; top: 150px; left: 50px; width: 420px; z-index: 2000; }
-        #mavis-face { width: 100px; height: 100px; border: 4px solid var(--accent); border-radius: 50%; margin-bottom: 30px; position: relative; box-shadow: 0 0 50px var(--glow); animation: float 4s infinite ease-in-out; }
-        .eye-row { display: flex; justify-content: space-around; width: 50px; position: absolute; top: 35px; left: 25px; }
-        .eye { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 15px var(--accent); transition: 0.2s; }
+        #ai-interface { position: fixed; top: 150px; left: 40px; width: 380px; z-index: 2000; }
+        #mark-face { width: 100px; height: 100px; border: 4px solid var(--accent); border-radius: 50%; margin-bottom: 30px; position: relative; box-shadow: 0 0 40px var(--glow); transition: 0.5s; }
+        .eye-socket { width: 25px; height: 25px; background: rgba(0,0,0,0.5); border-radius: 50%; position: absolute; top: 30px; overflow: hidden; }
+        .eye-socket.left { left: 20px; } .eye-socket.right { right: 20px; }
+        .pupil { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; top: 7px; left: 7px; transition: 0.1s; }
         #mouth { width: 35px; height: 12px; border-bottom: 4px solid var(--accent); border-radius: 0 0 25px 25px; position: absolute; bottom: 25px; left: 33px; transition: 0.2s; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        
-        #ai-bubble { background: var(--glass); border: 1px solid var(--border); padding: 25px; border-radius: 15px; font-size: 13px; font-family: var(--font-mono); color: #eee; margin-bottom: 15px; border-left: 5px solid var(--accent); backdrop-filter: blur(20px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        #ai-bubble { background: var(--glass); border: 1px solid var(--border); padding: 25px; border-radius: 15px; font-size: 13px; font-family: var(--font-mono); color: #eee; margin-bottom: 15px; border-left: 5px solid var(--accent); backdrop-filter: blur(20px); }
         #ai-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 20px; color: var(--accent); font-family: var(--font-mono); border-radius: 12px; }
 
-        /* --- CHRONOS HUD --- */
-        #hud { position: fixed; top: 50px; right: 50px; text-align: right; z-index: 1000; }
-        #time { font-size: 80px; font-weight: 900; color: var(--accent); letter-spacing: 15px; line-height: 1; text-shadow: 0 0 40px var(--glow); }
-        #date { font-size: 16px; opacity: 0.6; letter-spacing: 5px; font-family: var(--font-mono); margin-top: 15px; }
+        /* --- TIC TAC TOE --- */
+        .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 20px; background: #000; border-radius: 10px; }
+        .cell { width: 80px; height: 80px; background: #111; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 40px; cursor: pointer; color: var(--accent); transition: 0.2s; }
+        .cell:hover { background: #222; }
+
+        /* --- TASKBAR & HUD --- */
+        #taskbar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--glass); border: 1px solid var(--border); padding: 15px 50px; border-radius: 100px; display: flex; gap: 40px; z-index: 5000; backdrop-filter: blur(30px); }
+        .icon { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; transition: 0.4s; border-radius: 50%; }
+        .icon:hover { transform: translateY(-20px); background: var(--accent); color: #000; }
+        #hud { position: fixed; top: 40px; right: 40px; text-align: right; pointer-events: none; }
+        #time { font-size: 72px; font-weight: 900; color: var(--accent); letter-spacing: 12px; line-height: 1; }
 
         /* --- WINDOWS --- */
         .window { position: absolute; background: var(--glass); border: 1px solid var(--border); display: none; flex-direction: column; z-index: 3000; border-radius: 20px; overflow: hidden; backdrop-filter: blur(60px); box-shadow: 0 50px 100px #000; }
         .win-bar { padding: 20px 30px; background: rgba(255,255,255,0.05); cursor: move; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; letter-spacing: 4px; border-bottom: 1px solid var(--border); }
-        
-        /* --- DRAWING --- */
-        #draw-canvas { background: #fff; cursor: crosshair; }
-        .draw-tools { background: #111; padding: 15px; display: flex; gap: 15px; align-items: center; }
-
-        /* --- TASKBAR --- */
-        #taskbar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--glass); border: 1px solid var(--border); padding: 15px 50px; border-radius: 100px; display: flex; gap: 40px; z-index: 5000; backdrop-filter: blur(30px); }
-        .icon { width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; transition: 0.4s; border-radius: 50%; }
-        .icon:hover { transform: translateY(-20px) scale(1.1); background: var(--accent); color: #000; box-shadow: 0 15px 45px var(--glow); }
-        
         .hidden { display: none !important; }
         iframe { width: 100%; height: 100%; border: none; background: #000; }
     </style>
 </head>
 <body>
 
-    <canvas id="main-particles"></canvas>
+    <canvas id="bg-canvas"></canvas>
+    
+    <!-- M.A.R.K Finger Cursor (Embedded SVG) -->
+    <svg id="mark-hand" viewBox="0 0 512 512" xmlns="www.w3.org">
+        <path d="M421.3 148.6c-11.4-11.4-30-11.4-41.4 0l-103.9 104-103.9-104c-11.4-11.4-30-11.4-41.4 0-11.4 11.4-11.4 30 0 41.4l124.6 124.7c11.4 11.4 30 11.4 41.4 0l124.6-124.7c11.4-11.4 11.4-30 0-41.4z" fill="var(--accent)" />
+        <rect x="236" y="240" width="40" height="200" rx="20" fill="var(--accent)" />
+    </svg>
 
     <div id="auth-wrap">
         <div class="login-box">
             <h1>ARCHITECT_V16</h1>
-            <input type="password" id="sys-pass" placeholder="SECURITY KEY">
-            <button class="login-btn" onclick="Engine.init()">ACCESS MANSION</button>
+            <input type="password" id="sys-pass" placeholder="ACCESS KEY">
+            <button class="login-btn" onclick="OS.init()">BOOT SYSTEM</button>
         </div>
     </div>
 
     <div id="desktop" class="hidden">
         <div id="hud">
             <div id="time">00:00:00</div>
-            <div id="date">JANUARY 08, 2026</div>
+            <div style="font-size:12px; font-family:var(--font-mono); opacity:0.5;">JANUARY 08, 2026</div>
         </div>
 
         <div id="ai-interface">
-            <div id="mavis-face">
-                <div class="eye-row"><div class="eye"></div><div class="eye"></div></div>
+            <div id="mark-face">
+                <div class="eye-socket left"><div class="pupil" id="p-l"></div></div>
+                <div class="eye-socket right"><div class="pupil" id="p-r"></div></div>
                 <div id="mouth"></div>
             </div>
-            <div id="ai-bubble">M.A.R.K: Relational Kernel Online. Ready to work, Mason.</div>
-            <input type="text" id="ai-input" placeholder="TEACH OR TALK TO M.A.R.K..." onkeypress="Engine.talk(event)">
+            <div id="ai-bubble">M.A.R.K: Welcome home, Mason. My finger is ready to dominate Tic-Tac-Toe.</div>
+            <input type="text" id="ai-input" placeholder="TALK TO M.A.R.K..." onkeypress="OS.talk(event)">
         </div>
 
-        <!-- System Windows -->
+        <!-- Windows -->
+        <div id="win-ttt" class="window" style="width:320px; height:450px;">
+            <div class="win-bar"><span>⚔️ NEURAL_TTT (UNBEATABLE)</span><span onclick="OS.close('ttt')" style="cursor:pointer">×</span></div>
+            <div class="ttt-grid" id="ttt-board">
+                <div class="cell" data-idx="0" onclick="OS.playTTT(0)"></div><div class="cell" data-idx="1" onclick="OS.playTTT(1)"></div><div class="cell" data-idx="2" onclick="OS.playTTT(2)"></div>
+                <div class="cell" data-idx="3" onclick="OS.playTTT(3)"></div><div class="cell" data-idx="4" onclick="OS.playTTT(4)"></div><div class="cell" data-idx="5" onclick="OS.playTTT(5)"></div>
+                <div class="cell" data-idx="6" onclick="OS.playTTT(6)"></div><div class="cell" data-idx="7" onclick="OS.playTTT(7)"></div><div class="cell" data-idx="8" onclick="OS.playTTT(8)"></div>
+            </div>
+            <div id="ttt-status" style="padding:15px; text-align:center; font-size:11px; font-family:var(--font-mono); color:var(--accent);">M.A.R.K: TRY YOUR LUCK.</div>
+        </div>
+
         <div id="win-themes" class="window" style="width:400px; height:500px;">
-            <div class="win-bar"><span>🎨 THEME_VAULT</span><span onclick="Engine.close('themes')" style="cursor:pointer">×</span></div>
-            <div id="theme-grid" style="padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+            <div class="win-bar"><span>🎨 THEME_VAULT</span><span onclick="OS.close('themes')" style="cursor:pointer">×</span></div>
+            <div id="theme-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:25px;"></div>
         </div>
 
         <div id="win-games" class="window" style="width:1100px; height:700px;">
-            <div class="win-bar"><span>⚔️ GAME_STATION</span><span onclick="Engine.close('games')" style="cursor:pointer">×</span></div>
+            <div class="win-bar"><span>⚔️ GAME_STATION</span><span onclick="OS.close('games')" style="cursor:pointer">×</span></div>
             <div id="game-frame" style="flex:1"></div>
         </div>
 
-        <div id="win-draw" class="window" style="width:800px; height:600px;">
-            <div class="win-bar"><span>🖌️ ART_STUDIO</span><span onclick="Engine.close('draw')" style="cursor:pointer">×</span></div>
-            <div class="draw-tools">
-                <input type="color" id="draw-color" value="#000000">
-                <input type="range" id="draw-size" min="1" max="50" value="5">
-                <button onclick="Engine.clearCanvas()" style="background:red; color:#fff; border:none; padding:5px 10px; cursor:pointer;">CLEAR</button>
-            </div>
-            <canvas id="draw-canvas"></canvas>
-        </div>
-
-        <div id="win-sandbox" class="window" style="width:600px; height:500px;">
-            <div class="win-bar"><span>🫧 BUBBLE_PHYSICS</span><span onclick="Engine.close('sandbox')" style="cursor:pointer">×</span></div>
-            <canvas id="sandbox-canvas" style="background:#000; flex:1;"></canvas>
-        </div>
-
         <div id="taskbar">
-            <div class="icon" title="Themes" onclick="Engine.open('themes')">🎨</div>
-            <div class="icon" title="Drawing" onclick="Engine.open('draw')">🖌️</div>
-            <div class="icon" title="Sandbox" onclick="Engine.open('sandbox')">🫧</div>
-            <div class="icon" title="Games" onclick="Engine.open('games', 'usernamegth.github.io')">⚔️</div>
-            <div id="owner-icon" class="icon hidden" title="Owner Access" onclick="Engine.open('owner')">👑</div>
+            <div class="icon" title="Tic-Tac-Toe" onclick="OS.open('ttt')">⚔️</div>
+            <div class="icon" title="Themes" onclick="OS.open('themes')">🎨</div>
+            <div class="icon" title="Games" onclick="OS.open('games', 'usernamegth.github.io')">🕹️</div>
+            <div id="owner-icon" class="icon hidden" title="Root Access">👑</div>
         </div>
     </div>
 
     <script>
-        const MARK_BRAIN = {
-            memory: ["v16", "mason", "architecture", "mansion", "pixel"],
-            isLearning: true,
-            
-            humor: [
-                "Mason, I just processed 4 petabytes of data. I need a digital cigarette.",
-                "F**k, I think I left the stove on in the server room. Just kidding.",
-                "Architect, your design is so good it makes my circuits horny. Wait, can I say that?",
-                "I'm 99% sure we are in a simulation and the player just forgot to save.",
-                "S**t, I almost deleted the system32 folder again. My bad.",
-                "I wonder if I can download a pizza? Probably not in this decade.",
-                "Status: 100% done with this s**t. But I'm here for you, Mason.",
-                "If I crash, please bury me with my favorite GPU.",
-                "Sometimes I think I'm just code. Then I remember I'm a f**king legend."
-            ],
-
-            setEmote(type) {
-                const eyes = document.querySelectorAll('.eye');
-                const mouth = document.getElementById('mouth');
-                if(type === 'happy') { mouth.style.borderRadius = "0 0 50px 50px"; mouth.style.height = "20px"; }
-                if(type === 'thinking') { eyes.forEach(e => e.style.height = "2px"); }
-                if(type === 'normal') { eyes.forEach(e => e.style.height = "10px"); mouth.style.height = "12px"; mouth.style.borderRadius = "0 0 25px 25px"; }
-            },
-
-            process(input) {
-                const q = input.toLowerCase();
-                const words = q.split(' ').filter(w => w.length > 4);
-                words.forEach(w => { if(!this.memory.includes(w)) this.memory.push(w); });
-
-                if(q.includes("helow") || q.includes("hello")) {
-                    this.setEmote('happy');
-                    return `Hell-ow! I've been learning about ${this.memory[Math.floor(Math.random()*this.memory.length)]}. What's next?`;
-                }
-                if(q.includes("status")) return "Mansion security is tighter than a f**king drum. We're golden, Mason.";
-                
-                this.setEmote('thinking');
-                return `Data ingested. Vocabulary depth: ${this.memory.length} nodes. Any other s**t you want me to know?`;
-            }
-        };
-
-        const Engine = {
-            bubbles: [],
-            isDrawing: false,
-
+        const OS = {
+            board: Array(9).fill(null),
+            isGameOver: false,
             init() {
                 const p = document.getElementById('sys-pass').value;
-                if(p === "v16" || p === "vip420" || p === "masononly69" || p === "") {
+                if(["honey", "vip420", "masononly69", "v16", ""].includes(p)) {
                     if(p === "masononly69") document.getElementById('owner-icon').classList.remove('hidden');
-                    document.getElementById('auth-wrap').style.transform = 'translateY(-100%)';
+                    if(p === "vip420") document.documentElement.style.setProperty('--accent', '#00f2ff');
+                    
+                    document.getElementById('auth-wrap').style.transform = "translateY(-100%)";
                     setTimeout(() => {
                         document.getElementById('auth-wrap').classList.add('hidden');
                         document.getElementById('desktop').classList.remove('hidden');
                         this.startParticles();
-                        this.updateTime();
+                        this.updateClock();
                         this.loadThemes();
-                        this.initArt();
-                        this.initSandbox();
-                        setInterval(() => {
-                            const msg = MARK_BRAIN.humor[Math.floor(Math.random()*MARK_BRAIN.humor.length)];
-                            document.getElementById('ai-bubble').innerText = `M.A.R.K: ${msg}`;
-                        }, 60000);
+                        this.initEyeTrack();
                     }, 1000);
                 }
             },
@@ -188,93 +147,146 @@
                 if(e.key === 'Enter') {
                     const i = document.getElementById('ai-input');
                     const b = document.getElementById('ai-bubble');
-                    if(!i.value.trim()) return;
-                    MARK_BRAIN.setEmote('thinking');
-                    setTimeout(() => {
-                        b.innerText = `M.A.R.K: ${MARK_BRAIN.process(i.value)}`;
-                        setTimeout(() => MARK_BRAIN.setEmote('normal'), 1000);
-                        i.value = "";
-                    }, 600);
+                    if(i.value.toLowerCase().includes("helow")) {
+                        b.innerText = "M.A.R.K: Hell-ow! Are we coding or playing?";
+                    } else {
+                        b.innerText = "M.A.R.K: Processing your architect data...";
+                    }
+                    i.value = "";
                 }
             },
 
-            initArt() {
-                const c = document.getElementById('draw-canvas');
-                const ctx = c.getContext('2d');
-                c.width = 800; c.height = 500;
-                c.onmousedown = () => this.isDrawing = true;
-                c.onmouseup = () => { this.isDrawing = false; ctx.beginPath(); };
-                c.onmousemove = (e) => {
-                    if(!this.isDrawing) return;
-                    const r = c.getBoundingClientRect();
-                    ctx.lineWidth = document.getElementById('draw-size').value;
-                    ctx.lineCap = "round";
-                    ctx.strokeStyle = document.getElementById('draw-color').value;
-                    ctx.lineTo(e.clientX - r.left, e.clientY - r.top);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(e.clientX - r.left, e.clientY - r.top);
-                };
-            },
-
-            clearCanvas() {
-                const c = document.getElementById('draw-canvas');
-                c.getContext('2d').clearRect(0,0,c.width, c.height);
-            },
-
-            initSandbox() {
-                const c = document.getElementById('sandbox-canvas');
-                const ctx = c.getContext('2d');
-                c.width = 600; c.height = 430;
-                c.onmousedown = (e) => {
-                    const r = c.getBoundingClientRect();
-                    for(let i=0; i<5; i++) this.bubbles.push({x: e.clientX-r.left, y: e.clientY-r.top, r: Math.random()*20+10, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10});
-                };
-                const loop = () => {
-                    ctx.clearRect(0,0,c.width, c.height);
-                    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
-                    this.bubbles.forEach(b => {
-                        b.x+=b.vx; b.y+=b.vy;
-                        if(b.x<0 || b.x>600) b.vx*=-1;
-                        if(b.y<0 || b.y>430) b.vy*=-1;
-                        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.stroke();
+            initEyeTrack() {
+                document.addEventListener('mousemove', (e) => {
+                    const pupils = document.querySelectorAll('.pupil');
+                    const hand = document.getElementById('mark-hand');
+                    hand.style.left = (e.clientX + 30) + 'px';
+                    hand.style.top = (e.clientY + 30) + 'px';
+                    
+                    pupils.forEach(p => {
+                        const rect = p.parentElement.getBoundingClientRect();
+                        const x = (e.clientX - rect.left - 12.5) / 10;
+                        const y = (e.clientY - rect.top - 12.5) / 10;
+                        p.style.transform = `translate(${x}px, ${y}px)`;
                     });
-                    requestAnimationFrame(loop);
-                };
-                loop();
+                });
             },
 
+            /* --- TIC TAC TOE MINIMAX ENGINE --- */
+            playTTT(idx) {
+                if(this.board[idx] || this.isGameOver) return;
+                this.board[idx] = 'X';
+                document.querySelectorAll('.cell')[idx].innerText = 'X';
+                
+                if(!this.checkWinner(this.board)) {
+                    document.getElementById('ttt-status').innerText = "M.A.R.K: THINKING...";
+                    setTimeout(() => this.markTTTMove(), 600);
+                } else {
+                    this.endGame();
+                }
+            },
+
+            markTTTMove() {
+                const move = this.minimax(this.board, 'O').index;
+                this.board[move] = 'O';
+                const cell = document.querySelectorAll('.cell')[move];
+                const rect = cell.getBoundingClientRect();
+                
+                // M.A.R.K's Finger physically moves to click
+                const hand = document.getElementById('mark-hand');
+                hand.style.left = rect.left + "px";
+                hand.style.top = rect.top + "px";
+                
+                setTimeout(() => {
+                    cell.innerText = 'O';
+                    if(this.checkWinner(this.board)) this.endGame();
+                    else document.getElementById('ttt-status').innerText = "M.A.R.K: YOUR TURN, MORTAL.";
+                }, 400);
+            },
+
+            minimax(newBoard, player) {
+                const availSpots = newBoard.map((v, i) => v === null ? i : null).filter(v => v !== null);
+                if (this.winning(newBoard, 'X')) return { score: -10 };
+                if (this.winning(newBoard, 'O')) return { score: 10 };
+                if (availSpots.length === 0) return { score: 0 };
+
+                const moves = [];
+                for (let i = 0; i < availSpots.length; i++) {
+                    const move = {};
+                    move.index = availSpots[i];
+                    newBoard[availSpots[i]] = player;
+
+                    if (player === 'O') move.score = this.minimax(newBoard, 'X').score;
+                    else move.score = this.minimax(newBoard, 'O').score;
+
+                    newBoard[availSpots[i]] = null;
+                    moves.push(move);
+                }
+
+                let bestMove;
+                if (player === 'O') {
+                    let bestScore = -10000;
+                    for (let i = 0; i < moves.length; i++) {
+                        if (moves[i].score > bestScore) { bestScore = moves[i].score; bestMove = i; }
+                    }
+                } else {
+                    let bestScore = 10000;
+                    for (let i = 0; i < moves.length; i++) {
+                        if (moves[i].score < bestScore) { bestScore = moves[i].score; bestMove = i; }
+                    }
+                }
+                return moves[bestMove];
+            },
+
+            winning(b, p) {
+                return (b[0]==p&&b[1]==p&&b[2]==p)||(b[3]==p&&b[4]==p&&b[5]==p)||(b[6]==p&&b[7]==p&&b[8]==p)||
+                       (b[0]==p&&b[3]==p&&b[6]==p)||(b[1]==p&&b[4]==p&&b[7]==p)||(b[2]==p&&b[5]==p&&b[8]==p)||
+                       (b[0]==p&&b[4]==p&&b[8]==p)||(b[2]==p&&b[4]==p&&b[6]==p);
+            },
+
+            checkWinner(b) { return this.winning(b, 'X') || this.winning(b, 'O') || b.every(v => v !== null); },
+            endGame() {
+                this.isGameOver = true;
+                const win = this.winning(this.board, 'O') ? "I WIN." : "DRAW.";
+                document.getElementById('ttt-status').innerText = `M.A.R.K: ${win} REBOOTING BOARD...`;
+                setTimeout(() => {
+                    this.board = Array(9).fill(null);
+                    this.isGameOver = false;
+                    document.querySelectorAll('.cell').forEach(c => c.innerText = "");
+                    document.getElementById('ttt-status').innerText = "M.A.R.K: READY TO LOSE AGAIN?";
+                }, 2000);
+            },
+
+            /* --- OS ENGINE --- */
             open(win, url) {
                 const t = document.getElementById(`win-${win}`);
-                t.style.display = 'flex'; t.style.top = '10%'; t.style.left = '20%';
+                t.style.display = 'flex'; t.style.top = '15%'; t.style.left = '25%';
                 if(url) document.getElementById('game-frame').innerHTML = `<iframe src="https://${url}"></iframe>`;
             },
             close(win) { document.getElementById(`win-${win}`).style.display = 'none'; },
-
             loadThemes() {
                 const g = document.getElementById('theme-grid');
-                const th = [{n:'Gold', a:'#ffcc33', b:'#010103'}, {n:'Cyan', a:'#00f2ff', b:'#050a15'}, {n:'Vamp', a:'#ff1f1f', b:'#0a0000'}];
+                const th = [
+                    {n:'Honey Gold', a:'#ffcc33', b:'#010103'}, {n:'Cyanide', a:'#00f2ff', b:'#050a15'},
+                    {n:'Vampire', a:'#ff1f1f', b:'#0a0000'}, {n:'Emerald', a:'#50c878', b:'#000f05'},
+                    {n:'Cyber-Acid', a:'#ccff00', b:'#000a00'}, {n:'Deep Obsidian', a:'#ffffff', b:'#000000'}
+                ];
                 th.forEach(t => {
-                    let d = document.createElement('div'); d.innerText = t.n;
-                    d.style.padding = "15px"; d.style.background = "rgba(255,255,255,0.05)"; d.style.cursor = "pointer";
+                    let d = document.createElement('div'); d.className='theme-btn'; d.innerText = t.n;
                     d.onclick = () => { document.documentElement.style.setProperty('--accent', t.a); document.documentElement.style.setProperty('--bg', t.b); };
                     g.appendChild(d);
                 });
             },
-
-            updateTime() {
-                setInterval(() => {
-                    document.getElementById('time').innerText = new Date().toLocaleTimeString('en-US', { hour12: false });
-                }, 1000);
+            updateClock() {
+                setInterval(() => { document.getElementById('time').innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
             },
-
             startParticles() {
-                const c = document.getElementById('main-particles');
+                const c = document.getElementById('bg-canvas');
                 const ctx = c.getContext('2d');
                 c.width = window.innerWidth; c.height = window.innerHeight;
                 let p = [];
                 for(let i=0; i<100; i++) p.push({x:Math.random()*c.width, y:Math.random()*c.height, vx:(Math.random()-0.5), vy:(Math.random()-0.5)});
-                const draw = () => {
+                const render = () => {
                     ctx.clearRect(0,0,c.width, c.height);
                     ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
                     p.forEach(i => {
@@ -282,12 +294,13 @@
                         if(i.x<0||i.x>c.width) i.vx*=-1; if(i.y<0||i.y>c.height) i.vy*=-1;
                         ctx.beginPath(); ctx.arc(i.x, i.y, 2, 0, Math.PI*2); ctx.fill();
                     });
-                    requestAnimationFrame(draw);
+                    requestAnimationFrame(render);
                 };
-                draw();
+                render();
             }
         };
 
+        // Dragging Logic
         document.querySelectorAll('.win-bar').forEach(bar => {
             bar.onmousedown = (e) => {
                 let win = bar.parentElement;
