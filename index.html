@@ -1,234 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Drive</title> <!-- The ultimate unblocked title -->
-  <style>
-    /* ============= GLOBAL & THEME ============= */
-    @import url('fonts.googleapis.com');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mason’s Mansion | V13 Honey Perfect</title>
+    <!-- Matter.js for Physics Engine -->
+    <script src="cdnjs.cloudflare.com"></script>
+    <style>
+        :root {
+            --bg: #050400;
+            --accent: #ffcc33;
+            --glow: rgba(255, 204, 51, 0.35);
+            --glass: rgba(15, 12, 5, 0.85);
+            --border: rgba(255, 204, 51, 0.25);
+            --text: #ffffff;
+            --font: 'Segoe UI', system-ui, sans-serif;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; }
-    body {
-      background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-      color: #f8fafc;
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
-    a { color: inherit; text-decoration: none; }
+        * { cursor: none !important; box-sizing: border-box; }
 
-    /* Keyframe Animations */
-    @keyframes glow {
-      0%, 100% { text-shadow: 0 0 5px #06b6d4, 0 0 10px #06b6d4; }
-      50% { text-shadow: 0 0 10px #06b6d4, 0 0 20px #06b6d4; }
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-    }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: var(--font); 
+            margin: 0; 
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+        }
 
-    /* ============= PASSWORD PROTECTION (HONEY) ============= */
-    #lock-screen {
-      position: fixed; inset: 0; background: #020617; z-index: 9999;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center;
-    }
-    #lock-screen h2 { color: #06b6d4; margin-bottom: 20px; animation: glow 2s infinite alternate; }
-    #lock-screen input {
-      padding: 12px; border-radius: 8px; border: 2px solid #06b6d4;
-      background: #1e293b; color: white; text-align: center; font-size: 18px; outline: none;
-      box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
-    }
-    #lock-screen button {
-      margin-top: 25px; padding: 12px 30px; border-radius: 999px; border: none;
-      background: #facc15; color: #020617; font-weight: bold; cursor: pointer;
-      box-shadow: 0 0 15px rgba(250, 204, 21, 0.6); transition: 0.3s;
-    }
-    #lock-screen button:hover { background: #fcd34d; transform: translateY(-2px); }
+        /* --- PHYSICS BACKGROUND --- */
+        #physics-container {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+        }
 
-    /* ============= MAIN LAYOUT ============= */
-    #main-content { display: none; padding: 20px; max-width: 1200px; margin: auto; }
-    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #1e293b; }
-    .logo { font-size: 28px; font-weight: bold; color: #06b6d4; animation: glow 1.5s infinite alternate; }
-    
-    /* ============= GAME HUB GRID ============= */
-    .game-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 25px; margin-top: 30px;
-    }
-    .game-card {
-      background: #1e293b; border-radius: 12px; padding: 20px;
-      text-align: center; transition: 0.3s; cursor: pointer; border: 1px solid #334155;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-    .game-card:hover { transform: translateY(-5px) scale(1.03); border-color: #06b6d4; box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
-    .game-icon { font-size: 50px; margin-bottom: 15px; }
+        /* --- CUSTOM CURSOR --- */
+        #cursor-glow {
+            position: fixed; width: 450px; height: 450px;
+            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+            pointer-events: none; z-index: 10001; transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+        #cursor-dot {
+            position: fixed; width: 6px; height: 6px; background: var(--accent);
+            border-radius: 50%; pointer-events: none; z-index: 10002;
+            transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--accent);
+        }
 
-    /* ============= BOB AI ASSISTANT (Cool Version) ============= */
-    #bob-assistant {
-      position: fixed; bottom: 20px; right: 20px; width: 280px;
-      background: #1e293b; border: 2px solid #facc15; border-radius: 15px 15px 0 15px;
-      padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); z-index: 100;
-      animation: pulse 4s infinite;
-    }
-    #bob-avatar {
-      width: 60px; height: 60px; background: linear-gradient(45deg, #f97316, #b91c1c);
-      border-radius: 50%; margin: -50px auto 10px auto; border: 4px solid #facc15;
-    }
-    #bob-text { font-size: 14px; line-height: 1.4; color: #e2e8f0; }
-    .bob-name { font-weight: bold; color: #facc15; display: block; margin-bottom: 8px; }
+        /* --- AUTH SCREEN --- */
+        #auth-overlay {
+            position: fixed; inset: 0; z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            background: #000; transition: 1s ease-in-out;
+        }
+        .login-card { 
+            background: var(--glass); padding: 40px; border-radius: 30px; 
+            border: 1px solid var(--accent); text-align: center; width: 350px; 
+            box-shadow: 0 0 50px rgba(0,0,0,1); backdrop-filter: blur(20px);
+        }
+        .login-card h1 { color: var(--accent); letter-spacing: 5px; margin-bottom: 5px; font-size: 24px; text-shadow: 0 0 10px var(--glow); }
+        .credits { font-size: 10px; opacity: 0.6; margin-bottom: 25px; letter-spacing: 2px; text-transform: uppercase; }
+        .login-card input { width: 100%; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: #fff; margin-bottom: 15px; text-align: center; outline: none; }
+        .login-card button { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--accent); color: #000; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .login-card button:hover { box-shadow: 0 0 20px var(--accent); transform: scale(1.02); }
 
-    /* ============= GAME CONTAINER FOR EMBEDDED GAME ============= */
-    #game-embed-container {
-      display: none;
-      position: fixed; inset: 0; background: #000; z-index: 9998;
-    }
-    #game-close-btn {
-        position: fixed; top: 10px; right: 10px; z-index: 10000;
-        background: #ef4444; color: white; padding: 8px 16px; border-radius: 5px;
-        cursor: pointer; display: none; /* Only show when game is open */
-    }
+        /* --- SIDEBAR (MADNESS LIST) --- */
+        #sidebar {
+            position: fixed; left: -250px; top: 50%; transform: translateY(-50%);
+            width: 250px; background: var(--glass); border: 1px solid var(--border);
+            padding: 20px; border-radius: 0 25px 25px 0; z-index: 2000;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(15px);
+        }
+        #sidebar.open { left: 0; box-shadow: 15px 0 40px rgba(0,0,0,0.6); border-right: 2px solid var(--accent); }
+        #sidebar-tab {
+            position: absolute; right: -42px; top: 50%; transform: translateY(-50%);
+            background: var(--accent); color: #000; padding: 15px 10px;
+            border-radius: 0 12px 12px 0; cursor: pointer; font-weight: 900; writing-mode: vertical-rl; font-size: 11px;
+        }
 
-  </style>
+        .option-btn { width: 100%; padding: 12px; margin: 6px 0; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; border-radius: 10px; font-size: 12px; cursor: pointer; text-align: left; transition: 0.2s; }
+        .option-btn:hover { background: var(--accent); color: #000; font-weight: bold; }
+
+        /* --- WINDOWS --- */
+        #desktop { position: relative; width: 100vw; height: 100vh; z-index: 10; display: none; }
+        .window { 
+            position: absolute; background: var(--glass); border: 1px solid var(--border); 
+            border-radius: 20px; backdrop-filter: blur(25px); 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); overflow: hidden; 
+            display: flex; flex-direction: column; min-width: 400px;
+        }
+        .win-header { padding: 15px; background: rgba(255,255,255,0.05); cursor: move; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .win-title { font-size: 11px; font-weight: bold; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; }
+        .win-close { cursor: pointer; color: #ff5f56; font-size: 22px; line-height: 1; }
+        .win-content { flex-grow: 1; background: #000; position: relative; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* --- TASKBAR --- */
+        #taskbar { 
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); 
+            background: var(--glass); border: 1px solid var(--border); 
+            padding: 12px 25px; border-radius: 25px; display: flex; gap: 20px; 
+            z-index: 1000; backdrop-filter: blur(20px);
+        }
+        .t-icon { 
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; 
+            background: rgba(255,255,255,0.03); border-radius: 15px; cursor: pointer; 
+            font-size: 24px; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .t-icon:hover { transform: translateY(-12px) scale(1.2); background: var(--accent); color: #000; box-shadow: 0 5px 25px var(--glow); }
+    </style>
 </head>
 <body>
 
-  <!-- Lock Screen -->
-  <div id="lock-screen">
-    <h2>[ ACCESS PROTOCOL: HONEY ]</h2>
-    <input type="password" id="pass-input" placeholder="Initiate Sequence...">
-    <button onclick="checkPass()">ENTER</button>
-  </div>
+    <div id="cursor-glow"></div>
+    <div id="cursor-dot"></div>
+    <div id="physics-container"></div>
 
-  <!-- Main Game Site -->
-  <div id="main-content">
-    <header>
-      <div class="logo">&lt;CYBER_HUB /&gt;</div>
-      <div style="font-size: 12px; color: #64748b;">[ESC] Panic Protocol</div>
-    </header>
-
-    <div class="game-grid">
-      <div class="game-card" onclick="launchGame()">
-        <div class="game-icon">⚔️</div>
-        <h3>Gladihoppers</h3>
-        <p style="font-size: 10px; margin-top: 5px; color: #06b6d4;">(Poki Engine)</p>
-      </div>
-      <div class="game-card" onclick="alert('Game 2 Launch Logic Here')">
-        <div class="game-icon">🌌</div>
-        <h3>Star Explorer</h3>
-      </div>
-      <div class="game-card" onclick="alert('Game 3 Launch Logic Here')">
-        <div class="game-icon">🧩</div>
-        <h3>Logic Puzzle</h3>
-      </div>
-      <div class="game-card" onclick="alert('Game 4 Launch Logic Here')">
-        <div class="game-icon">👻</div>
-        <h3>Ghost Hunter</h3>
-      </div>
+    <div id="auth-overlay">
+        <div class="login-card">
+            <h1>MASON'S MANSION</h1>
+            <div class="credits">HONEY PERFECT | V13</div>
+            <input type="password" id="pass" placeholder="ACCESS CODE">
+            <button onclick="login()">Enter Mansion</button>
+        </div>
     </div>
 
-    <!-- BOB AI ASSISTANT -->
-    <div id="bob-assistant">
-      <div id="bob-avatar"></div>
-      <span class="bob-name">AI_Bob_v3.0</span>
-      <div id="bob-text">System operational. Gladihoppers is ready for deployment. Stay undetected!</div>
+    <div id="sidebar">
+        <div id="sidebar-tab" onclick="toggleSidebar()">MADNESS LIST</div>
+        <p style="font-size: 10px; color: var(--accent); opacity: 0.8;">ARCADE & TOOLS</p>
+        <button class="option-btn" onclick="openGame()">⚔️ Gladihoppers</button>
+        <button class="option-btn" onclick="spawnSquare()">📦 Spawn Physics Box</button>
+        <button class="option-btn" onclick="location.reload()">🔄 Refresh System</button>
     </div>
-  </div>
 
-  <!-- Game Embed Container -->
-  <button id="game-close-btn" onclick="closeGame()">Close Game [ESC]</button>
-  <div id="game-embed-container">
-    <!-- The game script will inject the canvas here -->
-  </div>
+    <div id="desktop">
+        <div id="win-gladi" class="window" style="width: 900px; height: 600px; left: 20%; top: 15%; display: none;">
+            <div class="win-header">
+                <span class="win-title">Gladihoppers v1.2</span>
+                <span class="win-close" onclick="closeGame()">●</span>
+            </div>
+            <div class="win-content">
+                <iframe id="game-frame" src=""></iframe>
+            </div>
+        </div>
+    </div>
 
+    <div id="taskbar">
+        <div class="t-icon" onclick="toggleSidebar()">☰</div>
+        <div class="t-icon" onclick="openGame()">⚔️</div>
+        <div class="t-icon" onclick="spawnSquare()">✨</div>
+    </div>
 
-  <script>
-    // Password Logic
-    function checkPass() {
-      const pass = document.getElementById('pass-input').value;
-      if (pass.toLowerCase() === 'honey') {
-        document.getElementById('lock-screen').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-        bobSpeak("Access Granted. Welcome to Cyber Hub.");
-      } else {
-        alert("Access Denied. Invalid Key.");
-      }
-    }
+    <script>
+        // --- CURSOR LOGIC ---
+        const glow = document.getElementById('cursor-glow');
+        const dot = document.getElementById('cursor-dot');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
+        });
 
-    // Bob AI Logic
-    function bobSpeak(msg) {
-      document.getElementById('bob-text').innerText = msg;
-    }
+        // --- AUTH & UI ---
+        function login() {
+            document.getElementById('auth-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('desktop').style.display = 'block';
+            }, 1000);
+        }
 
-    // Game Launch Logic
-    function launchGame() {
-        document.getElementById('main-content').style.display = 'none';
-        document.getElementById('bob-assistant').style.display = 'none';
-        document.getElementById('game-embed-container').style.display = 'block';
-        document.getElementById('game-close-btn').style.display = 'block';
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
 
-        // Inject the Poki Loader script provided by the user in the prompt
-        const script = document.createElement('script');
-        script.src = 'patch/js/poki-master-loader.js'; // IMPORTANT: You need to host this file
-        document.body.appendChild(script);
+        function openGame() {
+            const win = document.getElementById('win-gladi');
+            const iframe = document.getElementById('game-frame');
+            win.style.display = 'flex';
+            if(!iframe.src) iframe.src = "gladihoppers.com"; // Official/Standard URL
+        }
 
-        // Define window.config as specified in the user's Gladihoppers code
-        window.config = {
-            loader: 'unity',
-            debug: false,
-            maxRatio: 16 / 9,
-            minRatio: 9 / 16,
-            title: 'Gladihoppers',
-            thumbnail: 'patch/png/null.png',
-            numScreenshots: 5,
-            unityVersion: '2019.3.13f1',
-            unityWebglBuildUrl: 'Build/Gladihoppers.json', // IMPORTANT: You need to host this file
-            fileSize: 23,
-            cachedDecompressedFileSizes: {
-                'Gladihoppers.data.unityweb': 17409938,
-                'Gladihoppers.wasm.code.unityweb': 6410659,
-                'Gladihoppers.wasm.framework.unityweb': 91463,
-            },
-        };
-    }
+        function closeGame() {
+            document.getElementById('win-gladi').style.display = 'none';
+            document.getElementById('game-frame').src = ""; // Kill process/audio
+        }
 
-    function closeGame() {
-        document.getElementById('main-content').style.display = 'block';
-        document.getElementById('bob-assistant').style.display = 'block';
-        document.getElementById('game-embed-container').style.display = 'none';
-        document.getElementById('game-close-btn').style.display = 'none';
-        // Reloading might be necessary for some Unity builds to properly stop/unload
-        // location.reload();
-    }
+        // --- PHYSICS ENGINE (Matter.js) ---
+        const Engine = Matter.Engine,
+              Render = Matter.Render,
+              Runner = Matter.Runner,
+              Bodies = Matter.Bodies,
+              Composite = Matter.Composite;
 
+        const engine = Engine.create();
+        const render = Render.create({
+            element: document.getElementById('physics-container'),
+            engine: engine,
+            options: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                wireframes: false,
+                background: 'transparent'
+            }
+        });
 
-    // Random Bob Tips
-    const tips = [
-      "Remember to save your progress!",
-      "Math class is temporary, high scores are forever.",
-      "I'm scanning for teacher wifi signals... all clear!",
-      "That last game was impressive!"
-    ];
+        // Ground & Walls (Invisible)
+        const ground = Bodies.rectangle(window.innerWidth/2, window.innerHeight + 25, window.innerWidth, 50, { isStatic: true });
+        const leftWall = Bodies.rectangle(-25, window.innerHeight/2, 50, window.innerHeight, { isStatic: true });
+        const rightWall = Bodies.rectangle(window.innerWidth + 25, window.innerHeight/2, 50, window.innerHeight, { isStatic: true });
+        Composite.add(engine.world, [ground, leftWall, rightWall]);
 
-    setInterval(() => {
-      if(document.getElementById('main-content').style.display === 'block') {
-        const randomTip = tips[Math.floor(Math.random() * tips.length)];
-        bobSpeak(randomTip);
-      }
-    }, 15000);
+        function spawnSquare() {
+            const size = Math.random() * 30 + 20;
+            const square = Bodies.rectangle(
+                Math.random() * window.innerWidth, 
+                -50, 
+                size, size, 
+                { 
+                    render: { 
+                        fillStyle: 'transparent', 
+                        strokeStyle: '#ffcc33', 
+                        lineWidth: 2 
+                    },
+                    friction: 0.5,
+                    restitution: 0.7 
+                }
+            );
+            Composite.add(engine.world, square);
+        }
 
-    // Panic Key (Esc) Redirects to Google Drive/Classroom
-    window.addEventListener('keydown', (e) => {
-      if (e.key === "Escape") {
-        window.location.href = "https://drive.google.com";
-      }
-    });
+        // Start Physics
+        Render.run(render);
+        const runner = Runner.create();
+        Runner.run(runner, engine);
 
-    // Enter Key for password
-    document.getElementById('pass-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') checkPass();
-    });
-  </script>
+        // Resize Fix
+        window.addEventListener('resize', () => {
+            render.canvas.width = window.innerWidth;
+            render.canvas.height = window.innerHeight;
+            Matter.Body.setPosition(ground, { x: window.innerWidth/2, y: window.innerHeight + 25 });
+        });
+
+        // Auto-spawn a few squares
+        for(let i=0; i<10; i++) setTimeout(spawnSquare, i * 300);
+    </script>
 </body>
 </html>
