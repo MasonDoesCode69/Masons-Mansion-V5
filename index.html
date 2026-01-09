@@ -1,251 +1,583 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mason’s Mansion | V13 Honey Perfect</title>
-    <!-- Matter.js for Physics Engine -->
-    <script src="cdnjs.cloudflare.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mason's Mansion | Elite Unblocked 2026</title>
+    
+    <!-- UI Frameworks & Cool Fonts -->
+    <link href="https://cdn.jsdelivr.net" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+
     <style>
         :root {
-            --bg: #050400;
-            --accent: #ffcc33;
-            --glow: rgba(255, 204, 51, 0.35);
-            --glass: rgba(15, 12, 5, 0.85);
-            --border: rgba(255, 204, 51, 0.25);
-            --text: #ffffff;
-            --font: 'Segoe UI', system-ui, sans-serif;
+            --primary: #00f2ff;
+            --accent: #bc13fe;
+            --bg: #020205;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --font-main: 'Space Grotesk', sans-serif;
         }
 
-        * { cursor: none !important; box-sizing: border-box; }
-
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: var(--font); 
-            margin: 0; 
-            overflow: hidden; 
-            height: 100vh;
-            width: 100vw;
+        body {
+            background-color: var(--bg);
+            color: #fff;
+            font-family: var(--font-main);
+            margin: 0;
+            overflow-x: hidden;
+            background-attachment: fixed;
         }
 
-        /* --- PHYSICS BACKGROUND --- */
-        #physics-container {
-            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+        .neon-glow {
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary);
         }
 
-        /* --- CUSTOM CURSOR --- */
-        #cursor-glow {
-            position: fixed; width: 450px; height: 450px;
-            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
-            pointer-events: none; z-index: 10001; transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s;
-        }
-        #cursor-dot {
-            position: fixed; width: 6px; height: 6px; background: var(--accent);
-            border-radius: 50%; pointer-events: none; z-index: 10002;
-            transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--accent);
+        .mansion-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 25px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+            height: 100%;
         }
 
-        /* --- AUTH SCREEN --- */
-        #auth-overlay {
-            position: fixed; inset: 0; z-index: 10000;
-            display: flex; align-items: center; justify-content: center;
-            background: #000; transition: 1s ease-in-out;
-        }
-        .login-card { 
-            background: var(--glass); padding: 40px; border-radius: 30px; 
-            border: 1px solid var(--accent); text-align: center; width: 350px; 
-            box-shadow: 0 0 50px rgba(0,0,0,1); backdrop-filter: blur(20px);
-        }
-        .login-card h1 { color: var(--accent); letter-spacing: 5px; margin-bottom: 5px; font-size: 24px; text-shadow: 0 0 10px var(--glow); }
-        .credits { font-size: 10px; opacity: 0.6; margin-bottom: 25px; letter-spacing: 2px; text-transform: uppercase; }
-        .login-card input { width: 100%; background: #000; border: 1px solid var(--border); padding: 12px; border-radius: 12px; color: #fff; margin-bottom: 15px; text-align: center; outline: none; }
-        .login-card button { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--accent); color: #000; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .login-card button:hover { box-shadow: 0 0 20px var(--accent); transform: scale(1.02); }
-
-        /* --- SIDEBAR (MADNESS LIST) --- */
-        #sidebar {
-            position: fixed; left: -250px; top: 50%; transform: translateY(-50%);
-            width: 250px; background: var(--glass); border: 1px solid var(--border);
-            padding: 20px; border-radius: 0 25px 25px 0; z-index: 2000;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(15px);
-        }
-        #sidebar.open { left: 0; box-shadow: 15px 0 40px rgba(0,0,0,0.6); border-right: 2px solid var(--accent); }
-        #sidebar-tab {
-            position: absolute; right: -42px; top: 50%; transform: translateY(-50%);
-            background: var(--accent); color: #000; padding: 15px 10px;
-            border-radius: 0 12px 12px 0; cursor: pointer; font-weight: 900; writing-mode: vertical-rl; font-size: 11px;
+        .mansion-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--primary);
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);
         }
 
-        .option-btn { width: 100%; padding: 12px; margin: 6px 0; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; border-radius: 10px; font-size: 12px; cursor: pointer; text-align: left; transition: 0.2s; }
-        .option-btn:hover { background: var(--accent); color: #000; font-weight: bold; }
+        .game-thumb {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
 
-        /* --- WINDOWS --- */
-        #desktop { position: relative; width: 100vw; height: 100vh; z-index: 10; display: none; }
-        .window { 
-            position: absolute; background: var(--glass); border: 1px solid var(--border); 
-            border-radius: 20px; backdrop-filter: blur(25px); 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6); overflow: hidden; 
-            display: flex; flex-direction: column; min-width: 400px;
-        }
-        .win-header { padding: 15px; background: rgba(255,255,255,0.05); cursor: move; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-        .win-title { font-size: 11px; font-weight: bold; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; }
-        .win-close { cursor: pointer; color: #ff5f56; font-size: 22px; line-height: 1; }
-        .win-content { flex-grow: 1; background: #000; position: relative; }
-        iframe { width: 100%; height: 100%; border: none; }
+        #mainContent { display: none; }
 
-        /* --- TASKBAR --- */
-        #taskbar { 
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); 
-            background: var(--glass); border: 1px solid var(--border); 
-            padding: 12px 25px; border-radius: 25px; display: flex; gap: 20px; 
-            z-index: 1000; backdrop-filter: blur(20px);
+        .btn-mansion {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border: none;
+            color: #000;
+            font-weight: 700;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
         }
-        .t-icon { 
-            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; 
-            background: rgba(255,255,255,0.03); border-radius: 15px; cursor: pointer; 
-            font-size: 24px; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+
+        .owner-section {
+            display: none;
+            border-top: 2px solid var(--accent);
+            padding: 50px 0;
+            background: linear-gradient(transparent, rgba(188, 19, 254, 0.05));
         }
-        .t-icon:hover { transform: translateY(-12px) scale(1.2); background: var(--accent); color: #000; box-shadow: 0 5px 25px var(--glow); }
+
+        /* Physics playground */
+        .physics-section {
+            margin-top: 60px;
+        }
+
+        .physics-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .physics-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .physics-controls button {
+            background: var(--glass);
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            color: #fff;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+        }
+
+        .physics-controls button:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 18px rgba(0, 242, 255, 0.25);
+        }
+
+        #physicsCanvas {
+            width: 100%;
+            height: 420px;
+            border-radius: 24px;
+            background: radial-gradient(circle at 20% 0%, #15151b 0%, #050509 55%);
+            border: 1px solid var(--border);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+            cursor: crosshair;
+        }
+
+        .canvas-hint {
+            font-size: 0.85rem;
+            opacity: 0.6;
+            margin-top: 10px;
+        }
+
+        /* Quick bootstrap-ish layout shim (so your existing markup looks okay without full bootstrap) */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+        }
+
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -12px;
+        }
+
+        .col-md-4, .col-md-12, .col-md-3 {
+            padding: 12px;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 768px) {
+            .col-md-4 { width: 33.333%; }
+            .col-md-3 { width: 25%; }
+            .col-md-12 { width: 100%; }
+        }
+
+        @media (max-width: 767px) {
+            .col-md-4, .col-md-3, .col-md-12 { width: 100%; }
+        }
+
+        .text-center { text-align: center; }
+        .py-5 { padding-top: 3rem; padding-bottom: 3rem; }
+        .mb-5 { margin-bottom: 3rem; }
+        .mt-5 { margin-top: 3rem; }
+        .display-2 { font-size: 3rem; }
+        .fw-bold { font-weight: 700; }
+        .lead { font-size: 1.1rem; }
+        .opacity-50 { opacity: 0.5; }
+        .opacity-75 { opacity: 0.75; }
+        .d-md-flex {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .align-items-center { align-items: center; }
+        .text-md-start { text-align: left; }
+        .m-2 { margin: 0.5rem; }
     </style>
 </head>
-<body>
+<body onload="checkEntry()">
 
-    <div id="cursor-glow"></div>
-    <div id="cursor-dot"></div>
-    <div id="physics-container"></div>
-
-    <div id="auth-overlay">
-        <div class="login-card">
-            <h1>MASON'S MANSION</h1>
-            <div class="credits">HONEY PERFECT | V13</div>
-            <input type="password" id="pass" placeholder="ACCESS CODE">
-            <button onclick="login()">Enter Mansion</button>
-        </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-transparent border-bottom border-secondary">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-2 neon-glow" href="#">MASON'S MANSION</a>
+        <button onclick="triggerLogin()" class="btn btn-outline-info rounded-pill px-4 btn-mansion" style="background:none;color:#00f2ff;border:1px solid var(--border);padding:6px 18px;">
+            Dev Login
+        </button>
     </div>
+</nav>
 
-    <div id="sidebar">
-        <div id="sidebar-tab" onclick="toggleSidebar()">MADNESS LIST</div>
-        <p style="font-size: 10px; color: var(--accent); opacity: 0.8;">ARCADE & TOOLS</p>
-        <button class="option-btn" onclick="openGame()">⚔️ Gladihoppers</button>
-        <button class="option-btn" onclick="spawnSquare()">📦 Spawn Physics Box</button>
-        <button class="option-btn" onclick="location.reload()">🔄 Refresh System</button>
-    </div>
+<div id="mainContent">
+    <header class="container text-center py-5">
+        <h1 class="display-2 fw-bold">The <span class="neon-glow">Ultimate</span> Vault</h1>
+        <p class="lead opacity-50">Curated unblocked resources for 2026 elite gaming.</p>
+    </header>
 
-    <div id="desktop">
-        <div id="win-gladi" class="window" style="width: 900px; height: 600px; left: 20%; top: 15%; display: none;">
-            <div class="win-header">
-                <span class="win-title">Gladihoppers v1.2</span>
-                <span class="win-close" onclick="closeGame()">●</span>
+    <main class="container mb-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="mansion-card">
+                    <img src="https://www.coolmathgames.com" class="game-thumb">
+                    <h3>Cool Math Games</h3>
+                    <p class="opacity-75">The classic trusted repository for logic and strategy.</p>
+                    <a href="https://www.coolmathgames.com" target="_blank" class="btn btn-mansion w-100">Enter Site</a>
+                </div>
             </div>
-            <div class="win-content">
-                <iframe id="game-frame" src=""></iframe>
+
+            <div class="col-md-4">
+                <div class="mansion-card">
+                    <img src="https://yt3.googleusercontent.com" class="game-thumb">
+                    <h3>Unblocked Games 66</h3>
+                    <p class="opacity-75">Massive HTML5 library designed for school networks.</p>
+                    <a href="https://sites.google.com" target="_blank" class="btn btn-mansion w-100">Enter Site</a>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="mansion-card">
+                    <img src="https://www.hoodamath.com" class="game-thumb">
+                    <h3>Hooda Math</h3>
+                    <p class="opacity-75">Brain-training and skill games that bypass filters.</p>
+                    <a href="https://www.hoodamath.com" target="_blank" class="btn btn-mansion w-100">Enter Site</a>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="mansion-card d-md-flex align-items-center text-md-start">
+                    <img src="https://is1-ssl.mzstatic.com" style="width: 120px; border-radius: 20px; margin-right: 30px;">
+                    <div>
+                        <h3>Subway Surfers Online</h3>
+                        <p class="opacity-75">Run, dodge, and surf the tracks in full browser-based HTML5.</p>
+                        <a href="https://adfoc.us" class="btn btn-mansion">Launch Runner</a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="taskbar">
-        <div class="t-icon" onclick="toggleSidebar()">☰</div>
-        <div class="t-icon" onclick="openGame()">⚔️</div>
-        <div class="t-icon" onclick="spawnSquare()">✨</div>
-    </div>
+        <!-- Physics Playground -->
+        <section class="physics-section">
+            <div class="mansion-card">
+                <div class="physics-header">
+                    <div>
+                        <h2 class="neon-glow">Mansion Physics Lab</h2>
+                        <p class="opacity-75" style="margin:0;">Spawn orbs, throw them around, and watch the chaos.</p>
+                    </div>
+                    <div class="physics-controls">
+                        <button onclick="physicsLab.spawnRandom(10)">+10 Orbs</button>
+                        <button onclick="physicsLab.clear()">Clear</button>
+                        <button onclick="physicsLab.toggleGravity()">
+                            Toggle Gravity
+                        </button>
+                        <button onclick="physicsLab.randomKick()">Random Kick</button>
+                    </div>
+                </div>
+                <canvas id="physicsCanvas"></canvas>
+                <div class="canvas-hint">
+                    Left click & drag to throw. Right click to spawn. Scroll to change orb size.
+                </div>
+            </div>
+        </section>
 
-    <script>
-        // --- CURSOR LOGIC ---
-        const glow = document.getElementById('cursor-glow');
-        const dot = document.getElementById('cursor-dot');
-        document.addEventListener('mousemove', (e) => {
-            glow.style.left = e.clientX + 'px';
-            glow.style.top = e.clientY + 'px';
-            dot.style.left = e.clientX + 'px';
-            dot.style.top = e.clientY + 'px';
-        });
+        <section id="ownerArea" class="owner-section mt-5 text-center">
+            <h2 class="neon-glow mb-4">Mansion Dev Terminal</h2>
+            <div class="row g-3 justify-content-center">
+                <div class="col-md-3 mansion-card m-2"><h4>Node: 2026.x</h4></div>
+                <div class="col-md-3 mansion-card m-2"><h4>Status: Elite</h4></div>
+                <div class="col-md-3 mansion-card m-2"><h4>GPIO: Active</h4></div>
+            </div>
+        </section>
+    </main>
+</div>
 
-        // --- AUTH & UI ---
-        function login() {
-            document.getElementById('auth-overlay').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('auth-overlay').style.display = 'none';
-                document.getElementById('desktop').style.display = 'block';
-            }, 1000);
+<script>
+    function checkEntry() {
+        const pass = prompt("WELCOME TO THE MANSION. Access Key:");
+        if (pass === "honey") {
+            document.getElementById('mainContent').style.display = 'block';
+        } else if (pass === "masononly69") {
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('ownerArea').style.display = 'block';
+            alert("OWNER VERIFIED. Welcome back, Mason.");
+        } else {
+            alert("ACCESS DENIED.");
+            location.reload();
+        }
+    }
+
+    function triggerLogin() {
+        const devPass = prompt("Developer Override Key:");
+        if (devPass === "masononly69") {
+            document.getElementById('ownerArea').style.display = 'block';
+            document.getElementById('ownerArea').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        document.body.style.background = `radial-gradient(circle at ${x}% ${y}%, #0a0a0d 0%, #020205 60%)`;
+    });
+
+    // --------------------------------------------------
+    // Simple 2D physics engine: circles + walls
+    // --------------------------------------------------
+    const physicsLab = (() => {
+        const canvas = document.getElementById('physicsCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resize() {
+            const rect = canvas.getBoundingClientRect();
+            width = rect.width;
+            height = rect.height;
+            const scale = window.devicePixelRatio || 1;
+            canvas.width = width * scale;
+            canvas.height = height * scale;
+            ctx.setTransform(scale, 0, 0, scale, 0, 0);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const balls = [];
+        let gravityOn = true;
+        let gravity = 900;
+        let restitution = 0.75;
+        let friction = 0.995;
+        let lastTime = performance.now();
+        let mouse = { x: 0, y: 0, down: false, button: 0 };
+        let dragIndex = -1;
+        let dragOffset = { x: 0, y: 0 };
+        let prevMouse = { x: 0, y: 0 };
+        let spawnRadius = 18;
+
+        class Ball {
+            constructor(x, y, r) {
+                this.x = x;
+                this.y = y;
+                this.r = r;
+                this.vx = (Math.random() - 0.5) * 200;
+                this.vy = (Math.random() - 0.5) * 200;
+                this.mass = r * r * 0.02;
+                this.color = randomNeonColor();
+            }
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
+        function randomNeonColor() {
+            const palette = ['#00f2ff', '#bc13fe', '#ff2079', '#fffb00', '#00ff85'];
+            return palette[Math.floor(Math.random() * palette.length)];
         }
 
-        function openGame() {
-            const win = document.getElementById('win-gladi');
-            const iframe = document.getElementById('game-frame');
-            win.style.display = 'flex';
-            if(!iframe.src) iframe.src = "gladihoppers.com"; // Official/Standard URL
+        function spawnRandom(count = 1) {
+            for (let i = 0; i < count; i++) {
+                const r = 10 + Math.random() * 25;
+                const x = r + Math.random() * (width - 2 * r);
+                const y = r + Math.random() * (height - 2 * r);
+                balls.push(new Ball(x, y, r));
+            }
         }
 
-        function closeGame() {
-            document.getElementById('win-gladi').style.display = 'none';
-            document.getElementById('game-frame').src = ""; // Kill process/audio
+        function clear() {
+            balls.length = 0;
         }
 
-        // --- PHYSICS ENGINE (Matter.js) ---
-        const Engine = Matter.Engine,
-              Render = Matter.Render,
-              Runner = Matter.Runner,
-              Bodies = Matter.Bodies,
-              Composite = Matter.Composite;
+        function toggleGravity() {
+            gravityOn = !gravityOn;
+        }
 
-        const engine = Engine.create();
-        const render = Render.create({
-            element: document.getElementById('physics-container'),
-            engine: engine,
-            options: {
-                width: window.innerWidth,
-                height: window.innerHeight,
-                wireframes: false,
-                background: 'transparent'
+        function randomKick() {
+            balls.forEach(b => {
+                b.vx += (Math.random() - 0.5) * 600;
+                b.vy += (Math.random() - 0.5) * 600;
+            });
+        }
+
+        canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+        canvas.addEventListener('mousedown', e => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+            mouse.down = true;
+            mouse.button = e.button;
+            prevMouse.x = mouse.x;
+            prevMouse.y = mouse.y;
+
+            if (e.button === 2) {
+                balls.push(new Ball(mouse.x, mouse.y, spawnRadius));
+                return;
+            }
+
+            let nearest = -1;
+            let minDist = Infinity;
+            for (let i = 0; i < balls.length; i++) {
+                const b = balls[i];
+                const dx = mouse.x - b.x;
+                const dy = mouse.y - b.y;
+                const d2 = dx * dx + dy * dy;
+                if (d2 <= b.r * b.r && d2 < minDist) {
+                    nearest = i;
+                    minDist = d2;
+                }
+            }
+            dragIndex = nearest;
+            if (dragIndex !== -1) {
+                const b = balls[dragIndex];
+                dragOffset.x = mouse.x - b.x;
+                dragOffset.y = mouse.y - b.y;
+                b.vx = 0;
+                b.vy = 0;
             }
         });
 
-        // Ground & Walls (Invisible)
-        const ground = Bodies.rectangle(window.innerWidth/2, window.innerHeight + 25, window.innerWidth, 50, { isStatic: true });
-        const leftWall = Bodies.rectangle(-25, window.innerHeight/2, 50, window.innerHeight, { isStatic: true });
-        const rightWall = Bodies.rectangle(window.innerWidth + 25, window.innerHeight/2, 50, window.innerHeight, { isStatic: true });
-        Composite.add(engine.world, [ground, leftWall, rightWall]);
-
-        function spawnSquare() {
-            const size = Math.random() * 30 + 20;
-            const square = Bodies.rectangle(
-                Math.random() * window.innerWidth, 
-                -50, 
-                size, size, 
-                { 
-                    render: { 
-                        fillStyle: 'transparent', 
-                        strokeStyle: '#ffcc33', 
-                        lineWidth: 2 
-                    },
-                    friction: 0.5,
-                    restitution: 0.7 
-                }
-            );
-            Composite.add(engine.world, square);
-        }
-
-        // Start Physics
-        Render.run(render);
-        const runner = Runner.create();
-        Runner.run(runner, engine);
-
-        // Resize Fix
-        window.addEventListener('resize', () => {
-            render.canvas.width = window.innerWidth;
-            render.canvas.height = window.innerHeight;
-            Matter.Body.setPosition(ground, { x: window.innerWidth/2, y: window.innerHeight + 25 });
+        canvas.addEventListener('mouseup', () => {
+            mouse.down = false;
+            dragIndex = -1;
         });
 
-        // Auto-spawn a few squares
-        for(let i=0; i<10; i++) setTimeout(spawnSquare, i * 300);
-    </script>
+        canvas.addEventListener('mouseleave', () => {
+            mouse.down = false;
+            dragIndex = -1;
+        });
+
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+            if (dragIndex !== -1) {
+                const b = balls[dragIndex];
+                const dx = mouse.x - dragOffset.x - b.x;
+                const dy = mouse.y - dragOffset.y - b.y;
+                b.x = mouse.x - dragOffset.x;
+                b.y = mouse.y - dragOffset.y;
+                b.vx = dx * 60;
+                b.vy = dy * 60;
+            }
+            prevMouse.x = mouse.x;
+            prevMouse.y = mouse.y;
+        });
+
+        canvas.addEventListener('wheel', e => {
+            e.preventDefault();
+            spawnRadius += e.deltaY > 0 ? -2 : 2;
+            if (spawnRadius < 6) spawnRadius = 6;
+            if (spawnRadius > 60) spawnRadius = 60;
+        }, { passive: false });
+
+        function step(dt) {
+            const maxStep = 0.02;
+            if (dt > maxStep) dt = maxStep;
+
+            for (const b of balls) {
+                if (gravityOn) b.vy += gravity * dt;
+                b.vx *= friction;
+                b.vy *= friction;
+                b.x += b.vx * dt;
+                b.y += b.vy * dt;
+
+                if (b.x - b.r < 0) {
+                    b.x = b.r;
+                    b.vx *= -restitution;
+                } else if (b.x + b.r > width) {
+                    b.x = width - b.r;
+                    b.vx *= -restitution;
+                }
+
+                if (b.y - b.r < 0) {
+                    b.y = b.r;
+                    b.vy *= -restitution;
+                } else if (b.y + b.r > height) {
+                    b.y = height - b.r;
+                    b.vy *= -restitution;
+                }
+            }
+
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    resolveCollision(balls[i], balls[j]);
+                }
+            }
+        }
+
+        function resolveCollision(a, b) {
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const dist2 = dx * dx + dy * dy;
+            const minDist = a.r + b.r;
+            if (dist2 === 0 || dist2 > minDist * minDist) return;
+            const dist = Math.sqrt(dist2);
+            const nx = dx / dist;
+            const ny = dy / dist;
+
+            const overlap = minDist - dist;
+            const totalMass = a.mass + b.mass || 1;
+            const pa = overlap * (b.mass / totalMass);
+            const pb = overlap * (a.mass / totalMass);
+            a.x -= nx * pa;
+            a.y -= ny * pa;
+            b.x += nx * pb;
+            b.y += ny * pb;
+
+            const rvx = b.vx - a.vx;
+            const rvy = b.vy - a.vy;
+            const velAlongNormal = rvx * nx + rvy * ny;
+            if (velAlongNormal > 0) return;
+
+            const e = restitution;
+            const j = -(1 + e) * velAlongNormal / (1 / a.mass + 1 / b.mass);
+            const impulseX = j * nx;
+            const impulseY = j * ny;
+            a.vx -= impulseX / a.mass;
+            a.vy -= impulseY / a.mass;
+            b.vx += impulseX / b.mass;
+            b.vy += impulseY / b.mass;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            const gradient = ctx.createLinearGradient(0, 0, width, height);
+            gradient.addColorStop(0, 'rgba(0,242,255,0.15)');
+            gradient.addColorStop(1, 'rgba(188,19,254,0.05)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            for (const b of balls) {
+                const glow = ctx.createRadialGradient(
+                    b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.2,
+                    b.x, b.y, b.r * 1.4
+                );
+                glow.addColorStop(0, b.color);
+                glow.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.r * 1.6, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = b.color;
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        function loop(now) {
+            const dt = (now - lastTime) / 1000;
+            lastTime = now;
+            step(dt);
+            draw();
+            requestAnimationFrame(loop);
+        }
+        requestAnimationFrame(loop);
+
+        spawnRandom(18);
+
+        return {
+            spawnRandom,
+            clear,
+            toggleGravity,
+            randomKick
+        };
+    })();
+</script>
+
 </body>
 </html>
